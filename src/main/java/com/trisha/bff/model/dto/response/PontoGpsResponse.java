@@ -11,5 +11,7 @@ public record PontoGpsResponse(
         Double precisao,
         Double velocidade,
         Integer ordem,
-        LocalDateTime registradoEm
+        LocalDateTime registradoEm,
+        Boolean proximoDoInicio,
+        Double distanciaDoInicioMetros
 ) {}
