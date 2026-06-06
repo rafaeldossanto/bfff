@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: bff
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+server:
+  port: 8090
+
+# URLs base dos microservicos downstream (lidas por ServicosProperties).
+# Para rodar em Docker, troque localhost pelo nome do container (ex: http://app:8081).
+servicos:
+  cadastro: ${SERVICO_CADASTRO_URL:http://localhost:8080}
+  app: ${SERVICO_APP_URL:http://localhost:8081}
+  localizacao: ${SERVICO_LOCALIZACAO_URL:http://localhost:8082}
+  midia: ${SERVICO_MIDIA_URL:http://localhost:8083}
+
+# Parametros de cache do BFF (lidos por CacheProperties).
+cache:
+  ttl-segundos: ${CACHE_TTL_SEGUNDOS:60}
+
+# Actuator: health do BFF e dos downstreams.
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
