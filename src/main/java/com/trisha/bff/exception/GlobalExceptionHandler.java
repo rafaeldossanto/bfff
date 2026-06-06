@@ -13,18 +13,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Tratamento de erros centralizado do BFF. Como o BFF e a porta de entrada do
- * front, ele precisa traduzir as falhas dos downstreams de forma util:
- *
- * - Erro HTTP vindo de um microservico (4xx/5xx): repassa o MESMO status e a
- *   mensagem de origem, para o front receber "aventura nao encontrada" (404) em
- *   vez de um 500 generico do BFF.
- * - Downstream fora do ar / timeout: responde 503 (Service Unavailable), que e
- *   semanticamente o que aconteceu — o BFF esta de pe, mas a dependencia nao.
- * - IllegalArgumentException: erro de validacao/regra do proprio BFF -> 400.
- * - Qualquer outra coisa: 500.
- */
+
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {

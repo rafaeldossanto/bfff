@@ -8,16 +8,6 @@ import org.springframework.web.client.RestClient;
 
 import java.time.Duration;
 
-/**
- * Cria um {@link RestClient} dedicado por microservico downstream, cada um
- * com sua base URL. Um bean por servico (em vez de um RestClient generico)
- * deixa explicito quem fala com quem e permite ajustar timeouts/headers por
- * servico no futuro sem afetar os demais.
- *
- * Os beans sao nomeados (appRestClient, etc.) para serem injetados por nome
- * com @Qualifier nos clients correspondentes. Os timeouts evitam que uma
- * dependencia lenta segure uma thread do BFF indefinidamente.
- */
 @Configuration
 @EnableConfigurationProperties(ServicosProperties.class)
 public class RestClientConfig {
