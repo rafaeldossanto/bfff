@@ -2,6 +2,7 @@ package com.trisha.bff.service;
 
 import com.trisha.bff.client.AppClient;
 import com.trisha.bff.model.dto.response.EvidenciaResponse;
+import com.trisha.bff.model.dto.response.PaginaResponse;
 import com.trisha.bff.model.dto.response.PontoInteresseResponse;
 import com.trisha.bff.stub.BffStub;
 import org.junit.jupiter.api.DisplayName;
@@ -10,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -50,13 +53,16 @@ class PontoInteresseBffServiceTest {
     }
 
     @Test
-    @DisplayName("getByCaminho deve delegar e retornar lista")
+    @DisplayName("getByCaminho deve delegar e retornar pagina")
     void deveListarPorCaminho() {
-        when(appClient.getPontosByCaminho(BffStub.CAMINHO_ID)).thenReturn(List.of(BffStub.umPonto()));
+        Pageable pageable = PageRequest.of(0, 10);
+        PaginaResponse<PontoInteresseResponse> pagina =
+                new PaginaResponse<>(List.of(BffStub.umPonto()), 0, 10, 1L, 1);
+        when(appClient.getPontosByCaminho(BffStub.CAMINHO_ID, pageable)).thenReturn(pagina);
 
-        List<PontoInteresseResponse> response = service.getByCaminho(BffStub.CAMINHO_ID);
+        PaginaResponse<PontoInteresseResponse> response = service.getByCaminho(BffStub.CAMINHO_ID, pageable);
 
-        assertThat(response).hasSize(1);
+        assertThat(response.conteudo()).hasSize(1);
     }
 
     @Test

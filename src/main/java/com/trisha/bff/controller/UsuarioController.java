@@ -1,11 +1,14 @@
 package com.trisha.bff.controller;
 
+import com.trisha.bff.model.dto.request.LoginSocialRequest;
 import com.trisha.bff.model.dto.request.UsuarioCreateRequest;
 import com.trisha.bff.model.dto.request.UsuarioUpdateRequest;
+import com.trisha.bff.model.dto.response.UsuarioPublicoResponse;
 import com.trisha.bff.model.dto.response.UsuarioResponse;
 import com.trisha.bff.service.UsuarioBffService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import java.util.List;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +31,11 @@ public class UsuarioController {
         return usuarioService.create(request);
     }
 
+    @PostMapping("/login-social")
+    public UsuarioResponse loginSocial(@RequestBody @Valid LoginSocialRequest request) {
+        return usuarioService.loginSocial(request);
+    }
+
     @PutMapping("/{id}")
     public UsuarioResponse update(@PathVariable String id, @RequestBody @Valid UsuarioUpdateRequest request) {
         return usuarioService.update(id, request);
@@ -43,13 +51,4 @@ public class UsuarioController {
         usuarioService.delete(id);
     }
 
-    @PostMapping("/{id}/aceitar-termos")
-    public String aceitarTermos(@PathVariable("id") String usuarioId) {
-        return usuarioService.aceitarTermos(usuarioId);
-    }
-
-    @GetMapping("/confirmar-email")
-    public String confirmarEmail(@RequestParam String token) {
-        return usuarioService.confirmarEmail(token);
-    }
-}
+    @P

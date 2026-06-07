@@ -3,13 +3,13 @@ package com.trisha.bff.service;
 import com.trisha.bff.client.AppClient;
 import com.trisha.bff.model.dto.request.CaminhoRequest;
 import com.trisha.bff.model.dto.response.CaminhoResponse;
+import com.trisha.bff.model.dto.response.PaginaResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 
 @Service
@@ -30,13 +30,11 @@ public class CaminhoBffService {
         return appClient.finalizarCaminho(id, distanciaTotalKm);
     }
 
-    @Cacheable(cacheNames = "caminhos-aventura", key = "#aventuraId")
-    public List<CaminhoResponse> getByAventura(String aventuraId) {
-        return appClient.getCaminhosByAventura(aventuraId);
+    @Cacheable(cacheNames = "caminhos-aventura",
+            key = "#aventuraId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    public PaginaResponse<CaminhoResponse> getByAventura(String aventuraId, Pageable pageable) {
+        return appClient.getCaminhosByAventura(aventuraId, pageable);
     }
 
-    @Cacheable(cacheNames = "caminhos-usuario", key = "#usuarioId")
-    public List<CaminhoResponse> getByUsuario(String usuarioId) {
-        return appClient.getCaminhosByUsuario(usuarioId);
-    }
-}
+    @Cacheable(cacheNames = "caminhos-usuario",
+            key = "#usuar

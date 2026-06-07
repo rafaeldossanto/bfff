@@ -1,14 +1,19 @@
 package com.trisha.bff.service;
 
+import com.trisha.bff.client.AppClient;
 import com.trisha.bff.client.CadastroClient;
+import com.trisha.bff.model.dto.request.LoginSocialRequest;
 import com.trisha.bff.model.dto.request.UsuarioCreateRequest;
 import com.trisha.bff.model.dto.request.UsuarioUpdateRequest;
+import com.trisha.bff.model.dto.response.UsuarioPublicoResponse;
 import com.trisha.bff.model.dto.response.UsuarioResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Orquestra operacoes de usuario sobre o servico Cadastro.
@@ -24,6 +29,7 @@ import org.springframework.stereotype.Service;
 public class UsuarioBffService {
 
     private final CadastroClient cadastroClient;
+    private final AppClient appClient;
 
     public UsuarioResponse create(UsuarioCreateRequest request) {
         log.info("BFF: criando usuario {}", request.email());
@@ -46,13 +52,4 @@ public class UsuarioBffService {
     public void delete(String id) {
         log.info("BFF: deletando usuario {}", id);
         cadastroClient.delete(id);
-    }
-
-    public String confirmarEmail(String token) {
-        return cadastroClient.confirmarEmail(token);
-    }
-
-    public String aceitarTermos(String usuarioId) {
-        return cadastroClient.aceitarTermos(usuarioId);
-    }
-}
+    

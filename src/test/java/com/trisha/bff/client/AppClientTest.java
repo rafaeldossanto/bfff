@@ -2,9 +2,11 @@ package com.trisha.bff.client;
 
 import com.trisha.bff.model.dto.response.AmizadeResponse;
 import com.trisha.bff.model.dto.response.MidiaResponse;
+import com.trisha.bff.model.dto.response.PaginaResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.HttpClientErrorException;
@@ -57,20 +59,23 @@ class AppClientTest {
     }
 
     @Test
-    @DisplayName("getMidiasByAventura deve chamar a rota correta e desserializar a lista")
+    @DisplayName("getMidiasByAventura deve repassar page/size e desserializar a pagina")
     void deveBuscarMidias() {
-        server.expect(requestTo(BASE_URL + "/midia/aventura/aventura-1"))
+        server.expect(requestTo(BASE_URL + "/midia/aventura/aventura-1?page=0&size=10"))
                 .andExpect(method(org.springframework.http.HttpMethod.GET))
                 .andRespond(withSuccess("""
-                        [{"id":"m1","aventuraId":"aventura-1","caminhoId":"c1","tipo":"FOTO",
+                        {"content":[{"id":"m1","aventuraId":"aventura-1","caminhoId":"c1","tipo":"FOTO",
                           "url":"https://cdn/x.jpg","percentualNoCaminho":0.3,
-                          "distanciaNaCapturaKm":1.5,"capturadaEm":null}]
+                          "distanciaNaCapturaKm":1.5,"capturadaEm":null}],
+                          "number":0,"size":10,"totalElements":1,"totalPages":1}
                         """, MediaType.APPLICATION_JSON));
 
-        List<MidiaResponse> midias = appClient.getMidiasByAventura("aventura-1");
+        PaginaResponse<MidiaResponse> midias =
+                appClient.getMidiasByAventura("aventura-1", PageRequest.of(0, 10));
 
-        assertThat(midias).hasSize(1);
-        assertThat(midias.get(0).url()).isEqualTo("https://cdn/x.jpg");
+        assertThat(midias.conteudo()).hasSize(1);
+        assertThat(midias.conteudo().get(0).url()).isEqualTo("https://cdn/x.jpg");
+        assertThat(midias.total()).isEqualTo(1L);
         server.verify();
     }
 

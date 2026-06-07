@@ -2,9 +2,11 @@ package com.trisha.bff.controller;
 
 import com.trisha.bff.model.dto.request.CaminhoRequest;
 import com.trisha.bff.model.dto.response.CaminhoResponse;
+import com.trisha.bff.model.dto.response.PaginaResponse;
 import com.trisha.bff.service.CaminhoBffService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/bff/caminhos")
@@ -34,12 +34,9 @@ public class CaminhoController {
     }
 
     @GetMapping("/aventura/{aventuraId}")
-    public List<CaminhoResponse> getByAventura(@PathVariable String aventuraId) {
-        return caminhoService.getByAventura(aventuraId);
+    public PaginaResponse<CaminhoResponse> getByAventura(@PathVariable String aventuraId, Pageable pageable) {
+        return caminhoService.getByAventura(aventuraId, pageable);
     }
 
     @GetMapping("/usuario/{usuarioId}")
-    public List<CaminhoResponse> getByUsuario(@PathVariable String usuarioId) {
-        return caminhoService.getByUsuario(usuarioId);
-    }
-}
+    public PaginaRespo

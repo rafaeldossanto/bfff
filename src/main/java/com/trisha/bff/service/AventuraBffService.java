@@ -2,12 +2,18 @@ package com.trisha.bff.service;
 
 import com.trisha.bff.client.AppClient;
 import com.trisha.bff.model.dto.request.AventuraRequest;
+import com.trisha.bff.model.dto.response.AventuraDetalheResponse;
 import com.trisha.bff.model.dto.response.AventuraResponse;
+import com.trisha.bff.model.dto.response.CaminhoResponse;
+import com.trisha.bff.model.dto.response.MidiaResponse;
+import com.trisha.bff.model.dto.response.PaginaResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +32,14 @@ import java.util.List;
 @Slf4j
 public class AventuraBffService {
 
+    /**
+     * Pagina usada na agregacao da tela de aventura. A tela mostra os primeiros
+     * caminhos e midias da aventura; o front pagina o resto via os endpoints
+     * dedicados de caminho/midia. Mantemos um teto generoso para nao perder itens
+     * na visao inicial sem trazer colecoes ilimitadas.
+     */
+    private static final Pageable PRIMEIRA_PAGINA_DETALHE = PageRequest.of(0, 50);
+
     private final AppClient appClient;
 
     public AventuraResponse create(AventuraRequest request) {
@@ -38,32 +52,12 @@ public class AventuraBffService {
         return appClient.getAventura(id);
     }
 
-    @Cacheable(cacheNames = "aventuras-usuario", key = "#usuarioId")
-    public List<AventuraResponse> getByUsuario(String usuarioId) {
-        return appClient.getAventurasByUsuario(usuarioId);
-    }
-
-    @Caching(evict = {
-            @CacheEvict(cacheNames = "aventura", key = "#id"),
-            @CacheEvict(cacheNames = "aventuras-usuario", allEntries = true)
-    })
-    public AventuraResponse atualizarStatus(String id, String status) {
-        log.info("BFF: atualizando status da aventura {} para {}", id, status);
-        return appClient.atualizarStatusAventura(id, status);
-    }
-
-    @CacheEvict(cacheNames = "aventura", key = "#aventuraId")
-    public void adicionarParticipante(String aventuraId, String usuarioId) {
-        log.info("BFF: adicionando participante {} a aventura {}", usuarioId, aventuraId);
-        appClient.adicionarParticipante(aventuraId, usuarioId);
-    }
-
-    @Caching(evict = {
-            @CacheEvict(cacheNames = "aventura", key = "#id"),
-            @CacheEvict(cacheNames = "aventuras-usuario", allEntries = true)
-    })
-    public void delete(String id) {
-        log.info("BFF: deletando aventura {}", id);
-        appClient.deletarAventura(id);
-    }
-}
+    /**
+     * Tela de aventura: junta a aventura, seus caminhos e suas midias numa unica
+     * resposta. O app faz UMA chamada em vez de tres sequenciais. Tudo vem do
+     * APP (que concentra esses dados), entao continua sendo uma agregacao barata.
+     */
+    @Cacheable(cacheNames = "aventura-detalhe", key = "#id")
+    public AventuraDetalheResponse getDetalhe(String id) {
+        log.info("BFF: montando tela de aventura {}", id);
+        AventuraResponse
