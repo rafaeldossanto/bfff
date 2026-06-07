@@ -37,4 +37,8 @@ public class CaminhoBffService {
     }
 
     @Cacheable(cacheNames = "caminhos-usuario",
-            key = "#usuar
+            key = "#usuarioId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    public PaginaResponse<CaminhoResponse> getByUsuario(String usuarioId, Pageable pageable) {
+        return appClient.getCaminhosByUsuario(usuarioId, pageable);
+    }
+}

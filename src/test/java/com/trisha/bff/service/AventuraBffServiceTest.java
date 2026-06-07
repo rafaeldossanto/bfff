@@ -83,4 +83,29 @@ class AventuraBffServiceTest {
     }
 
     @Test
-    @DisplayName("atualizarStatus 
+    @DisplayName("atualizarStatus deve delegar ao AppClient")
+    void deveAtualizarStatus() {
+        when(appClient.atualizarStatusAventura(BffStub.AVENTURA_ID, "CONCLUIDA"))
+                .thenReturn(BffStub.umaAventura());
+
+        service.atualizarStatus(BffStub.AVENTURA_ID, "CONCLUIDA");
+
+        verify(appClient).atualizarStatusAventura(BffStub.AVENTURA_ID, "CONCLUIDA");
+    }
+
+    @Test
+    @DisplayName("adicionarParticipante deve delegar ao AppClient")
+    void deveAdicionarParticipante() {
+        service.adicionarParticipante(BffStub.AVENTURA_ID, "usuario-9");
+
+        verify(appClient).adicionarParticipante(BffStub.AVENTURA_ID, "usuario-9");
+    }
+
+    @Test
+    @DisplayName("delete deve delegar ao AppClient")
+    void deveDeletar() {
+        service.delete(BffStub.AVENTURA_ID);
+
+        verify(appClient).deletarAventura(BffStub.AVENTURA_ID);
+    }
+}

@@ -51,4 +51,23 @@ public class UsuarioController {
         usuarioService.delete(id);
     }
 
-    @P
+    @PostMapping("/{id}/aceitar-termos")
+    public String aceitarTermos(@PathVariable("id") String usuarioId) {
+        return usuarioService.aceitarTermos(usuarioId);
+    }
+
+    @GetMapping("/confirmar-email")
+    public String confirmarEmail(@RequestParam String token) {
+        return usuarioService.confirmarEmail(token);
+    }
+
+    @GetMapping("/codigo/{codigoUsuario}")
+    public UsuarioPublicoResponse buscarPorCodigo(@PathVariable String codigoUsuario) {
+        return usuarioService.buscarPorCodigo(codigoUsuario);
+    }
+
+    @GetMapping("/busca")
+    public List<UsuarioPublicoResponse> autocomplete(@RequestParam String termo) {
+        return usuarioService.autocomplete(termo);
+    }
+}

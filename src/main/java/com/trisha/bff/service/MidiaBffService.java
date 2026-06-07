@@ -46,4 +46,11 @@ public class MidiaBffService {
     }
 
     @Caching(evict = {
-   
+            @CacheEvict(cacheNames = "midias-aventura", allEntries = true),
+            @CacheEvict(cacheNames = "midias-caminho", allEntries = true)
+    })
+    public void delete(String id) {
+        log.info("BFF: deletando metadados de midia {}", id);
+        appClient.deletarMidia(id);
+    }
+}

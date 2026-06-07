@@ -48,4 +48,8 @@ public class PontoInteresseBffService {
             @CacheEvict(cacheNames = "ponto", key = "#request.pontoId()"),
             @CacheEvict(cacheNames = "pontos-caminho", allEntries = true)
     })
-    public EvidenciaResponse
+    public EvidenciaResponse adicionarEvidencia(EvidenciaRequest request) {
+        log.info("BFF: adicionando evidencia ao ponto {}", request.pontoId());
+        return appClient.adicionarEvidencia(request);
+    }
+}

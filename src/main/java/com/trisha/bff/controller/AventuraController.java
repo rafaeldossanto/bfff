@@ -47,4 +47,16 @@ public class AventuraController {
 
     @PatchMapping("/{id}/status")
     public AventuraResponse atualizarStatus(@PathVariable String id, @RequestParam String status) {
-        return aventuraService.atualizarStatus(
+        return aventuraService.atualizarStatus(id, status);
+    }
+
+    @PostMapping("/{id}/participante")
+    public void adicionarParticipante(@PathVariable String id, @RequestParam String usuarioId) {
+        aventuraService.adicionarParticipante(id, usuarioId);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable String id) {
+        aventuraService.delete(id);
+    }
+}

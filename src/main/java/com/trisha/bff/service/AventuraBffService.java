@@ -60,4 +60,41 @@ public class AventuraBffService {
     @Cacheable(cacheNames = "aventura-detalhe", key = "#id")
     public AventuraDetalheResponse getDetalhe(String id) {
         log.info("BFF: montando tela de aventura {}", id);
-        AventuraResponse
+        AventuraResponse aventura = appClient.getAventura(id);
+        List<CaminhoResponse> caminhos = appClient.getCaminhosByAventura(id, PRIMEIRA_PAGINA_DETALHE).conteudo();
+        List<MidiaResponse> midias = appClient.getMidiasByAventura(id, PRIMEIRA_PAGINA_DETALHE).conteudo();
+        return new AventuraDetalheResponse(aventura, caminhos, midias);
+    }
+
+    @Cacheable(cacheNames = "aventuras-usuario",
+            key = "#usuarioId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    public PaginaResponse<AventuraResponse> getByUsuario(String usuarioId, Pageable pageable) {
+        return appClient.getAventurasByUsuario(usuarioId, pageable);
+    }
+
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "aventura", key = "#id"),
+            @CacheEvict(cacheNames = "aventura-detalhe", key = "#id"),
+            @CacheEvict(cacheNames = "aventuras-usuario", allEntries = true)
+    })
+    public AventuraResponse atualizarStatus(String id, String status) {
+        log.info("BFF: atualizando status da aventura {} para {}", id, status);
+        return appClient.atualizarStatusAventura(id, status);
+    }
+
+    @CacheEvict(cacheNames = "aventura", key = "#aventuraId")
+    public void adicionarParticipante(String aventuraId, String usuarioId) {
+        log.info("BFF: adicionando participante {} a aventura {}", usuarioId, aventuraId);
+        appClient.adicionarParticipante(aventuraId, usuarioId);
+    }
+
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "aventura", key = "#id"),
+            @CacheEvict(cacheNames = "aventura-detalhe", key = "#id"),
+            @CacheEvict(cacheNames = "aventuras-usuario", allEntries = true)
+    })
+    public void delete(String id) {
+        log.info("BFF: deletando aventura {}", id);
+        appClient.deletarAventura(id);
+    }
+}

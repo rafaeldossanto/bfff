@@ -88,4 +88,32 @@ class UsuarioBffServiceTest {
         var request = new com.trisha.bff.model.dto.request.LoginSocialRequest("GOOGLE", "token-jwt");
         when(cadastroClient.loginSocial(request)).thenReturn(BffStub.umUsuario());
 
-        UsuarioResp
+        UsuarioResponse response = service.loginSocial(request);
+
+        assertThat(response.id()).isEqualTo(BffStub.USUARIO_ID);
+        verify(cadastroClient).loginSocial(request);
+    }
+
+    @Test
+    @DisplayName("buscarPorCodigo deve delegar ao AppClient")
+    void deveBuscarPorCodigo() {
+        var publico = new UsuarioPublicoResponse("rafael#1", "Rafael");
+        when(appClient.buscarUsuarioPorCodigo("rafael#1")).thenReturn(publico);
+
+        UsuarioPublicoResponse response = service.buscarPorCodigo("rafael#1");
+
+        assertThat(response.codigoUsuario()).isEqualTo("rafael#1");
+        verify(appClient).buscarUsuarioPorCodigo("rafael#1");
+    }
+
+    @Test
+    @DisplayName("autocomplete deve delegar ao AppClient")
+    void deveAutocompletar() {
+        when(appClient.autocompletarUsuario("raf"))
+                .thenReturn(List.of(new UsuarioPublicoResponse("rafael#1", "Rafael")));
+
+        List<UsuarioPublicoResponse> response = service.autocomplete("raf");
+
+        assertThat(response).hasSize(1);
+    }
+}

@@ -52,4 +52,26 @@ public class UsuarioBffService {
     public void delete(String id) {
         log.info("BFF: deletando usuario {}", id);
         cadastroClient.delete(id);
-    
+    }
+
+    public String confirmarEmail(String token) {
+        return cadastroClient.confirmarEmail(token);
+    }
+
+    public String aceitarTermos(String usuarioId) {
+        return cadastroClient.aceitarTermos(usuarioId);
+    }
+
+    public UsuarioResponse loginSocial(LoginSocialRequest request) {
+        log.info("BFF: login social via {}", request.provedor());
+        return cadastroClient.loginSocial(request);
+    }
+
+    public UsuarioPublicoResponse buscarPorCodigo(String codigoUsuario) {
+        return appClient.buscarUsuarioPorCodigo(codigoUsuario);
+    }
+
+    public List<UsuarioPublicoResponse> autocomplete(String termo) {
+        return appClient.autocompletarUsuario(termo);
+    }
+}
