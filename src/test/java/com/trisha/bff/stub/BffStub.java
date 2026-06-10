@@ -70,7 +70,7 @@ public final class BffStub {
     }
 
     public static CaminhoRequest umCaminhoRequest() {
-        return new CaminhoRequest(AVENTURA_ID, USUARIO_ID, "ROXO", 1);
+        return new CaminhoRequest(AVENTURA_ID, USUARIO_ID, "ROXO");
     }
 
     // ------------------------- Ponto de interesse -----------------------

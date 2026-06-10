@@ -5,6 +5,5 @@ import jakarta.validation.constraints.NotBlank;
 public record CaminhoRequest(
         @NotBlank String aventuraId,
         @NotBlank String usuarioId,
-        String cor,
-        Integer numero
+        String cor
 ) {}

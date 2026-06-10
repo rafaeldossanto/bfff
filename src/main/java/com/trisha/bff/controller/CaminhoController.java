@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -28,9 +27,10 @@ public class CaminhoController {
         return caminhoService.iniciar(request);
     }
 
+    // A distancia nao vem mais do cliente: o BFF a obtem do servico de Localizacao.
     @PatchMapping("/{id}/finalizar")
-    public CaminhoResponse finalizar(@PathVariable String id, @RequestParam Double distanciaTotalKm) {
-        return caminhoService.finalizar(id, distanciaTotalKm);
+    public CaminhoResponse finalizar(@PathVariable String id) {
+        return caminhoService.finalizar(id);
     }
 
     @GetMapping("/aventura/{aventuraId}")
