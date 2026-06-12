@@ -12,8 +12,6 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
@@ -42,19 +40,20 @@ class AppClientTest {
     }
 
     @Test
-    @DisplayName("getAmigos deve chamar a rota correta e desserializar a lista")
+    @DisplayName("getAmigos deve chamar a rota paginada e desserializar a pagina")
     void deveBuscarAmigos() {
-        server.expect(requestTo(BASE_URL + "/amizade/amigos/usuario-1"))
+        server.expect(requestTo(BASE_URL + "/amizade/amigos?page=0&size=10"))
                 .andExpect(method(org.springframework.http.HttpMethod.GET))
                 .andRespond(withSuccess("""
-                        [{"id":"a1","solicitanteId":"usuario-1","receptorId":"usuario-2",
-                          "status":"ACEITA","solicitadoEm":null,"respondidoEm":null}]
+                        {"content":[{"id":"a1","solicitanteId":"usuario-1","receptorId":"usuario-2",
+                          "status":"ACEITA","solicitadoEm":null,"respondidoEm":null}],
+                          "number":0,"size":10,"totalElements":1,"totalPages":1}
                         """, MediaType.APPLICATION_JSON));
 
-        List<AmizadeResponse> amigos = appClient.getAmigos("usuario-1");
+        PaginaResponse<AmizadeResponse> amigos = appClient.getAmigos(PageRequest.of(0, 10));
 
-        assertThat(amigos).hasSize(1);
-        assertThat(amigos.get(0).receptorId()).isEqualTo("usuario-2");
+        assertThat(amigos.conteudo()).hasSize(1);
+        assertThat(amigos.conteudo().get(0).receptorId()).isEqualTo("usuario-2");
         server.verify();
     }
 
@@ -82,10 +81,10 @@ class AppClientTest {
     @Test
     @DisplayName("erro 404 do downstream deve propagar como HttpClientErrorException")
     void devePropagarErroDownstream() {
-        server.expect(requestTo(BASE_URL + "/amizade/amigos/inexistente"))
+        server.expect(requestTo(BASE_URL + "/amizade/amigos?page=0&size=10"))
                 .andRespond(withStatus(org.springframework.http.HttpStatus.NOT_FOUND));
 
-        assertThatThrownBy(() -> appClient.getAmigos("inexistente"))
+        assertThatThrownBy(() -> appClient.getAmigos(PageRequest.of(0, 10)))
                 .isInstanceOf(HttpClientErrorException.class);
 
         server.verify();

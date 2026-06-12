@@ -10,7 +10,6 @@ import jakarta.validation.constraints.NotBlank;
 public record MidiaRequest(
         @NotBlank String aventuraId,
         String caminhoId,
-        @NotBlank String usuarioId,
         @NotBlank String tipo,
         @NotBlank String url,
         Double latCaptura,

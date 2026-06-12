@@ -7,6 +7,13 @@ spring:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
 
+  # Resource server da borda: valida o Bearer da app (JWKS do Cadastro) e o propaga downstream.
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${JWKS_URI:http://localhost:8080/oauth2/jwks}
+
 server:
   port: 8090
 

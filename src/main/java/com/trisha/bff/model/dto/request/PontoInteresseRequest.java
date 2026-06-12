@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 
 public record PontoInteresseRequest(
         @NotBlank String caminhoId,
-        @NotBlank String usuarioId,
         @NotBlank String tipo,
         String nome,
         String descricao,

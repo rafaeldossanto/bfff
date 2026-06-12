@@ -31,7 +31,7 @@ public class AppClient {
     private static final ParameterizedTypeReference<PaginaResponse<CaminhoResponse>> PAGINA_CAMINHO = new ParameterizedTypeReference<>() {};
     private static final ParameterizedTypeReference<PaginaResponse<PontoInteresseResponse>> PAGINA_PONTO = new ParameterizedTypeReference<>() {};
     private static final ParameterizedTypeReference<PaginaResponse<MidiaResponse>> PAGINA_MIDIA = new ParameterizedTypeReference<>() {};
-    private static final ParameterizedTypeReference<List<AmizadeResponse>> LISTA_AMIZADE = new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<PaginaResponse<AmizadeResponse>> PAGINA_AMIZADE = new ParameterizedTypeReference<>() {};
     private static final ParameterizedTypeReference<List<UsuarioPublicoResponse>> LISTA_USUARIO_PUBLICO = new ParameterizedTypeReference<>() {};
 
     private final RestClient appRestClient;
@@ -172,14 +172,22 @@ public class AppClient {
                 .retrieve().body(AmizadeResponse.class);
     }
 
-    public List<AmizadeResponse> getPendentes(String usuarioId) {
-        return appRestClient.get().uri("/amizade/pendentes/{usuarioId}", usuarioId)
-                .retrieve().body(LISTA_AMIZADE);
+    public PaginaResponse<AmizadeResponse> getPendentes(Pageable pageable) {
+        return appRestClient.get()
+                .uri(b -> b.path("/amizade/pendentes")
+                        .queryParam("page", pageable.getPageNumber())
+                        .queryParam("size", pageable.getPageSize())
+                        .build())
+                .retrieve().body(PAGINA_AMIZADE);
     }
 
-    public List<AmizadeResponse> getAmigos(String usuarioId) {
-        return appRestClient.get().uri("/amizade/amigos/{usuarioId}", usuarioId)
-                .retrieve().body(LISTA_AMIZADE);
+    public PaginaResponse<AmizadeResponse> getAmigos(Pageable pageable) {
+        return appRestClient.get()
+                .uri(b -> b.path("/amizade/amigos")
+                        .queryParam("page", pageable.getPageNumber())
+                        .queryParam("size", pageable.getPageSize())
+                        .build())
+                .retrieve().body(PAGINA_AMIZADE);
     }
 
     // --------------------------- Busca de usuario -----------------------

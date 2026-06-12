@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 
 public record EvidenciaRequest(
         @NotBlank String pontoId,
-        @NotBlank String usuarioId,
         @NotBlank String fotoUrl,
         @NotBlank String tipoEvidencia,
         @NotNull Double latCaptura,

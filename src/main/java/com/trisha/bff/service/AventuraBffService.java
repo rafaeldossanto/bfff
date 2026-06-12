@@ -43,7 +43,7 @@ public class AventuraBffService {
     private final AppClient appClient;
 
     public AventuraResponse create(AventuraRequest request) {
-        log.info("BFF: criando aventura para usuario {}", request.usuarioId());
+        log.info("BFF: criando aventura para o destino {}", request.destino());
         return appClient.criarAventura(request);
     }
 

@@ -59,7 +59,7 @@ public final class BffStub {
     }
 
     public static AventuraRequest umaAventuraRequest() {
-        return new AventuraRequest(USUARIO_ID, "regiao-1", "Pico da Bandeira", "PRIVADA");
+        return new AventuraRequest("regiao-1", "Pico da Bandeira", "PRIVADA");
     }
 
     // ----------------------------- Caminho ------------------------------
@@ -70,7 +70,7 @@ public final class BffStub {
     }
 
     public static CaminhoRequest umCaminhoRequest() {
-        return new CaminhoRequest(AVENTURA_ID, USUARIO_ID, "ROXO");
+        return new CaminhoRequest(AVENTURA_ID, "ROXO");
     }
 
     // ------------------------- Ponto de interesse -----------------------
@@ -81,7 +81,7 @@ public final class BffStub {
     }
 
     public static PontoInteresseRequest umPontoRequest() {
-        return new PontoInteresseRequest(CAMINHO_ID, USUARIO_ID, "MIRANTE",
+        return new PontoInteresseRequest(CAMINHO_ID, "MIRANTE",
                 "Mirante", "Vista", -20.43, -41.79);
     }
 
@@ -91,7 +91,7 @@ public final class BffStub {
     }
 
     public static EvidenciaRequest umaEvidenciaRequest() {
-        return new EvidenciaRequest(PONTO_ID, USUARIO_ID, "https://cdn/foto.jpg",
+        return new EvidenciaRequest(PONTO_ID, "https://cdn/foto.jpg",
                 "VISTA", -20.43, -41.79);
     }
 
@@ -103,7 +103,7 @@ public final class BffStub {
     }
 
     public static MidiaRequest umaMidiaRequest() {
-        return new MidiaRequest(AVENTURA_ID, CAMINHO_ID, USUARIO_ID, "FOTO",
+        return new MidiaRequest(AVENTURA_ID, CAMINHO_ID, "FOTO",
                 "https://cdn/midia.jpg", -20.43, -41.79, 1.5, 0.30);
     }
 
@@ -115,7 +115,7 @@ public final class BffStub {
     }
 
     public static AmizadeRequest umaAmizadeRequest() {
-        return new AmizadeRequest(USUARIO_ID, "usuario-2");
+        return new AmizadeRequest("usuario-2");
     }
 
     // ---------------------------- Localizacao ---------------------------

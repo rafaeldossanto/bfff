@@ -1,24 +1,24 @@
 package com.trisha.bff.service;
 
+import com.trisha.bff.auth.UsuarioAutenticado;
 import com.trisha.bff.client.AppClient;
 import com.trisha.bff.model.dto.request.AmizadeRequest;
 import com.trisha.bff.model.dto.response.AmizadeResponse;
+import com.trisha.bff.model.dto.response.PaginaResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 /**
- * Orquestra operacoes de amizade sobre o servico APP.
+ * Orquestra operacoes de amizade sobre o servico APP. O ator vem do token
+ * (propagado downstream); as listagens sao do proprio usuario autenticado.
  *
- * Solicitar e responder mudam as listas de pendentes/amigos dos dois usuarios
- * envolvidos. Como a chave do cache e por usuario e nao temos os dois ids em
- * toda operacao, invalidamos as listas inteiras (allEntries) — simples e
- * seguro para um dominio de baixo volume de escrita.
+ * Escritas invalidam as listas inteiras (allEntries) — simples e seguro para um
+ * dominio de baixo volume de escrita.
  */
 @Service
 @RequiredArgsConstructor
@@ -32,7 +32,7 @@ public class AmizadeBffService {
             @CacheEvict(cacheNames = "amizades-pendentes", allEntries = true)
     })
     public AmizadeResponse solicitar(AmizadeRequest request) {
-        log.info("BFF: solicitacao de amizade de {} para {}", request.solicitanteId(), request.receptorId());
+        log.info("BFF: solicitacao de amizade para {}", request.receptorId());
         return appClient.solicitarAmizade(request);
     }
 
@@ -45,13 +45,15 @@ public class AmizadeBffService {
         return appClient.responderAmizade(id, status);
     }
 
-    @Cacheable(cacheNames = "amizades-pendentes", key = "#usuarioId")
-    public List<AmizadeResponse> getPendentes(String usuarioId) {
-        return appClient.getPendentes(usuarioId);
+    @Cacheable(cacheNames = "amizades-pendentes",
+            key = "#usuario.id + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    public PaginaResponse<AmizadeResponse> getPendentes(UsuarioAutenticado usuario, Pageable pageable) {
+        return appClient.getPendentes(pageable);
     }
 
-    @Cacheable(cacheNames = "amigos", key = "#usuarioId")
-    public List<AmizadeResponse> getAmigos(String usuarioId) {
-        return appClient.getAmigos(usuarioId);
+    @Cacheable(cacheNames = "amigos",
+            key = "#usuario.id + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    public PaginaResponse<AmizadeResponse> getAmigos(UsuarioAutenticado usuario, Pageable pageable) {
+        return appClient.getAmigos(pageable);
     }
 }

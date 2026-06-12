@@ -1,7 +1,9 @@
 package com.trisha.bff.service;
 
+import com.trisha.bff.auth.UsuarioAutenticado;
 import com.trisha.bff.client.AppClient;
 import com.trisha.bff.model.dto.response.AmizadeResponse;
+import com.trisha.bff.model.dto.response.PaginaResponse;
 import com.trisha.bff.stub.BffStub;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -26,6 +30,9 @@ class AmizadeBffServiceTest {
 
     @InjectMocks
     private AmizadeBffService service;
+
+    private final UsuarioAutenticado usuario = new UsuarioAutenticado(BffStub.USUARIO_ID, "rafael#1", "rafael@trilha.com");
+    private final Pageable pageable = PageRequest.of(0, 10);
 
     @Test
     @DisplayName("solicitar deve delegar ao AppClient")
@@ -49,22 +56,24 @@ class AmizadeBffServiceTest {
     }
 
     @Test
-    @DisplayName("getPendentes deve delegar e retornar lista")
+    @DisplayName("getPendentes deve delegar e retornar pagina")
     void deveListarPendentes() {
-        when(appClient.getPendentes(BffStub.USUARIO_ID)).thenReturn(List.of(BffStub.umaAmizade()));
+        PaginaResponse<AmizadeResponse> pagina = new PaginaResponse<>(List.of(BffStub.umaAmizade()), 0, 10, 1L, 1);
+        when(appClient.getPendentes(pageable)).thenReturn(pagina);
 
-        List<AmizadeResponse> response = service.getPendentes(BffStub.USUARIO_ID);
+        PaginaResponse<AmizadeResponse> response = service.getPendentes(usuario, pageable);
 
-        assertThat(response).hasSize(1);
+        assertThat(response.conteudo()).hasSize(1);
     }
 
     @Test
-    @DisplayName("getAmigos deve delegar e retornar lista")
+    @DisplayName("getAmigos deve delegar e retornar pagina")
     void deveListarAmigos() {
-        when(appClient.getAmigos(BffStub.USUARIO_ID)).thenReturn(List.of(BffStub.umaAmizade()));
+        PaginaResponse<AmizadeResponse> pagina = new PaginaResponse<>(List.of(BffStub.umaAmizade()), 0, 10, 1L, 1);
+        when(appClient.getAmigos(pageable)).thenReturn(pagina);
 
-        List<AmizadeResponse> response = service.getAmigos(BffStub.USUARIO_ID);
+        PaginaResponse<AmizadeResponse> response = service.getAmigos(usuario, pageable);
 
-        assertThat(response).hasSize(1);
+        assertThat(response.conteudo()).hasSize(1);
     }
 }

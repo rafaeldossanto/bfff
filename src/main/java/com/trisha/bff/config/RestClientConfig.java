@@ -16,9 +16,11 @@ public class RestClientConfig {
     private static final Duration TIMEOUT_LEITURA = Duration.ofSeconds(5);
 
     private final ServicosProperties servicos;
+    private final BearerPropagationInterceptor bearerInterceptor;
 
-    public RestClientConfig(ServicosProperties servicos) {
+    public RestClientConfig(ServicosProperties servicos, BearerPropagationInterceptor bearerInterceptor) {
         this.servicos = servicos;
+        this.bearerInterceptor = bearerInterceptor;
     }
 
     @Bean
@@ -45,6 +47,7 @@ public class RestClientConfig {
         return RestClient.builder()
                 .baseUrl(baseUrl)
                 .requestFactory(requestFactory())
+                .requestInterceptor(bearerInterceptor)
                 .build();
     }
 
