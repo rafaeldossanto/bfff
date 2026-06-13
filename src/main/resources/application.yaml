@@ -17,6 +17,11 @@ spring:
 server:
   port: 8090
 
+# traceId (correlacao de requisicoes) gerado na borda e propagado downstream.
+logging:
+  pattern:
+    level: "%5p [trace:%X{traceId:-}]"
+
 servicos:
   cadastro: ${SERVICO_CADASTRO_URL:http://localhost:8080}
   app: ${SERVICO_APP_URL:http://localhost:8081}

@@ -17,10 +17,14 @@ public class RestClientConfig {
 
     private final ServicosProperties servicos;
     private final BearerPropagationInterceptor bearerInterceptor;
+    private final TraceIdPropagationInterceptor traceInterceptor;
 
-    public RestClientConfig(ServicosProperties servicos, BearerPropagationInterceptor bearerInterceptor) {
+    public RestClientConfig(ServicosProperties servicos,
+                            BearerPropagationInterceptor bearerInterceptor,
+                            TraceIdPropagationInterceptor traceInterceptor) {
         this.servicos = servicos;
         this.bearerInterceptor = bearerInterceptor;
+        this.traceInterceptor = traceInterceptor;
     }
 
     @Bean
@@ -48,6 +52,7 @@ public class RestClientConfig {
                 .baseUrl(baseUrl)
                 .requestFactory(requestFactory())
                 .requestInterceptor(bearerInterceptor)
+                .requestInterceptor(traceInterceptor)
                 .build();
     }
 
