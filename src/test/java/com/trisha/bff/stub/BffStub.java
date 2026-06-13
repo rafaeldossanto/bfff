@@ -120,7 +120,7 @@ public final class BffStub {
     }
 
     public static AmizadeRequest umaAmizadeRequest() {
-        return new AmizadeRequest("usuario-2");
+        return new AmizadeRequest("rafael#2");
     }
 
     // ---------------------------- Localizacao ---------------------------

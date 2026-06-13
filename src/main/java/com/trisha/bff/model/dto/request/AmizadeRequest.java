@@ -7,5 +7,5 @@ import jakarta.validation.constraints.NotBlank;
  * O cliente informa apenas o alvo.
  */
 public record AmizadeRequest(
-        @NotBlank String receptorId
+        @NotBlank String receptorCodigo
 ) {}

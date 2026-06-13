@@ -32,7 +32,7 @@ public class AmizadeBffService {
             @CacheEvict(cacheNames = "amizades-pendentes", allEntries = true)
     })
     public AmizadeResponse solicitar(AmizadeRequest request) {
-        log.info("BFF: solicitacao de amizade para {}", request.receptorId());
+        log.info("BFF: solicitacao de amizade para {}", request.receptorCodigo());
         return appClient.solicitarAmizade(request);
     }
 
