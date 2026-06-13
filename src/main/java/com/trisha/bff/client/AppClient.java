@@ -13,6 +13,7 @@ import com.trisha.bff.model.dto.response.EvidenciaResponse;
 import com.trisha.bff.model.dto.response.MidiaResponse;
 import com.trisha.bff.model.dto.response.PaginaResponse;
 import com.trisha.bff.model.dto.response.PontoInteresseResponse;
+import com.trisha.bff.model.dto.response.RegiaoResponse;
 import com.trisha.bff.model.dto.response.UsuarioPublicoResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,6 +34,7 @@ public class AppClient {
     private static final ParameterizedTypeReference<PaginaResponse<MidiaResponse>> PAGINA_MIDIA = new ParameterizedTypeReference<>() {};
     private static final ParameterizedTypeReference<PaginaResponse<AmizadeResponse>> PAGINA_AMIZADE = new ParameterizedTypeReference<>() {};
     private static final ParameterizedTypeReference<List<UsuarioPublicoResponse>> LISTA_USUARIO_PUBLICO = new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<List<RegiaoResponse>> LISTA_REGIAO = new ParameterizedTypeReference<>() {};
 
     private final RestClient appRestClient;
 
@@ -40,6 +42,11 @@ public class AppClient {
         this.appRestClient = appRestClient;
     }
 
+
+    public List<RegiaoResponse> listarRegioes() {
+        return appRestClient.get().uri("/regiao")
+                .retrieve().body(LISTA_REGIAO);
+    }
 
     public AventuraResponse criarAventura(AventuraRequest request) {
         return appRestClient.post().uri("/aventura").body(request)
