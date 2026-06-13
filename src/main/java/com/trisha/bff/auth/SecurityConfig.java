@@ -22,7 +22,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/bff/usuarios", "/bff/usuarios/login-social").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/bff/usuarios", "/bff/usuarios/login-social", "/bff/auth/dev-login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/bff/usuarios/confirmar-email").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/actuator/health").permitAll()
                         .anyRequest().authenticated())

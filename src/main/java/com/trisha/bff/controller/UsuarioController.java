@@ -3,6 +3,7 @@ package com.trisha.bff.controller;
 import com.trisha.bff.model.dto.request.LoginSocialRequest;
 import com.trisha.bff.model.dto.request.UsuarioCreateRequest;
 import com.trisha.bff.model.dto.request.UsuarioUpdateRequest;
+import com.trisha.bff.model.dto.response.AutenticacaoResponse;
 import com.trisha.bff.model.dto.response.UsuarioPublicoResponse;
 import com.trisha.bff.model.dto.response.UsuarioResponse;
 import com.trisha.bff.service.UsuarioBffService;
@@ -32,7 +33,7 @@ public class UsuarioController {
     }
 
     @PostMapping("/login-social")
-    public UsuarioResponse loginSocial(@RequestBody @Valid LoginSocialRequest request) {
+    public AutenticacaoResponse loginSocial(@RequestBody @Valid LoginSocialRequest request) {
         return usuarioService.loginSocial(request);
     }
 

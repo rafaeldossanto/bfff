@@ -2,9 +2,11 @@ package com.trisha.bff.service;
 
 import com.trisha.bff.client.AppClient;
 import com.trisha.bff.client.CadastroClient;
+import com.trisha.bff.model.dto.request.DevLoginRequest;
 import com.trisha.bff.model.dto.request.LoginSocialRequest;
 import com.trisha.bff.model.dto.request.UsuarioCreateRequest;
 import com.trisha.bff.model.dto.request.UsuarioUpdateRequest;
+import com.trisha.bff.model.dto.response.AutenticacaoResponse;
 import com.trisha.bff.model.dto.response.UsuarioPublicoResponse;
 import com.trisha.bff.model.dto.response.UsuarioResponse;
 import lombok.RequiredArgsConstructor;
@@ -62,9 +64,14 @@ public class UsuarioBffService {
         return cadastroClient.aceitarTermos(usuarioId);
     }
 
-    public UsuarioResponse loginSocial(LoginSocialRequest request) {
+    public AutenticacaoResponse loginSocial(LoginSocialRequest request) {
         log.info("BFF: login social via {}", request.provedor());
         return cadastroClient.loginSocial(request);
+    }
+
+    public AutenticacaoResponse devLogin(DevLoginRequest request) {
+        log.info("BFF: dev login {}", request.email());
+        return cadastroClient.devLogin(request);
     }
 
     public UsuarioPublicoResponse buscarPorCodigo(String codigoUsuario) {

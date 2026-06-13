@@ -2,6 +2,7 @@ package com.trisha.bff.service;
 
 import com.trisha.bff.client.AppClient;
 import com.trisha.bff.client.CadastroClient;
+import com.trisha.bff.model.dto.response.AutenticacaoResponse;
 import com.trisha.bff.model.dto.response.UsuarioPublicoResponse;
 import com.trisha.bff.model.dto.response.UsuarioResponse;
 import com.trisha.bff.stub.BffStub;
@@ -86,11 +87,12 @@ class UsuarioBffServiceTest {
     @DisplayName("loginSocial deve delegar ao CadastroClient")
     void deveFazerLoginSocial() {
         var request = new com.trisha.bff.model.dto.request.LoginSocialRequest("GOOGLE", "token-jwt");
-        when(cadastroClient.loginSocial(request)).thenReturn(BffStub.umUsuario());
+        when(cadastroClient.loginSocial(request)).thenReturn(BffStub.umaAutenticacao());
 
-        UsuarioResponse response = service.loginSocial(request);
+        AutenticacaoResponse response = service.loginSocial(request);
 
-        assertThat(response.id()).isEqualTo(BffStub.USUARIO_ID);
+        assertThat(response.usuario().id()).isEqualTo(BffStub.USUARIO_ID);
+        assertThat(response.accessToken()).isEqualTo("jwt-token");
         verify(cadastroClient).loginSocial(request);
     }
 

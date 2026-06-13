@@ -11,6 +11,7 @@ import com.trisha.bff.model.dto.request.SessaoRequest;
 import com.trisha.bff.model.dto.request.UsuarioCreateRequest;
 import com.trisha.bff.model.dto.request.UsuarioUpdateRequest;
 import com.trisha.bff.model.dto.response.AmizadeResponse;
+import com.trisha.bff.model.dto.response.AutenticacaoResponse;
 import com.trisha.bff.model.dto.response.AventuraResponse;
 import com.trisha.bff.model.dto.response.CaminhoResponse;
 import com.trisha.bff.model.dto.response.EvidenciaResponse;
@@ -41,6 +42,10 @@ public final class BffStub {
     public static UsuarioResponse umUsuario() {
         return new UsuarioResponse(USUARIO_ID, "Rafael", "rafael@trilha.com",
                 "USR-1", "ATIVO", LocalDateTime.now(), LocalDateTime.now());
+    }
+
+    public static AutenticacaoResponse umaAutenticacao() {
+        return new AutenticacaoResponse(umUsuario(), "jwt-token", 7200);
     }
 
     public static UsuarioCreateRequest umUsuarioCreateRequest() {

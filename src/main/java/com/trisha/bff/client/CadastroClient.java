@@ -1,8 +1,10 @@
 package com.trisha.bff.client;
 
+import com.trisha.bff.model.dto.request.DevLoginRequest;
 import com.trisha.bff.model.dto.request.LoginSocialRequest;
 import com.trisha.bff.model.dto.request.UsuarioCreateRequest;
 import com.trisha.bff.model.dto.request.UsuarioUpdateRequest;
+import com.trisha.bff.model.dto.response.AutenticacaoResponse;
 import com.trisha.bff.model.dto.response.UsuarioResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -69,12 +71,21 @@ public class CadastroClient {
                 .body(String.class);
     }
 
-    public UsuarioResponse loginSocial(LoginSocialRequest request) {
+    public AutenticacaoResponse loginSocial(LoginSocialRequest request) {
         log.debug("CADASTRO: login social via {}", request.provedor());
         return cadastroRestClient.post()
                 .uri("/auth/social")
                 .body(request)
                 .retrieve()
-                .body(UsuarioResponse.class);
+                .body(AutenticacaoResponse.class);
+    }
+
+    public AutenticacaoResponse devLogin(DevLoginRequest request) {
+        log.debug("CADASTRO: dev login {}", request.email());
+        return cadastroRestClient.post()
+                .uri("/auth/dev-login")
+                .body(request)
+                .retrieve()
+                .body(AutenticacaoResponse.class);
     }
 }
