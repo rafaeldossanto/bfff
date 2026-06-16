@@ -10,6 +10,8 @@ import com.trisha.bff.model.dto.request.PontoInteresseRequest;
 import com.trisha.bff.model.dto.request.RegiaoRequest;
 import com.trisha.bff.model.dto.response.AmizadeResponse;
 import com.trisha.bff.model.dto.response.AventuraResponse;
+import com.trisha.bff.model.dto.response.ContadoresResponse;
+import com.trisha.bff.model.dto.response.StatusSeguirResponse;
 import com.trisha.bff.model.dto.response.CaminhoResponse;
 import com.trisha.bff.model.dto.response.EvidenciaResponse;
 import com.trisha.bff.model.dto.response.MidiaResponse;
@@ -36,6 +38,7 @@ public class AppClient {
     private static final ParameterizedTypeReference<PaginaResponse<MidiaResponse>> PAGINA_MIDIA = new ParameterizedTypeReference<>() {};
     private static final ParameterizedTypeReference<PaginaResponse<AmizadeResponse>> PAGINA_AMIZADE = new ParameterizedTypeReference<>() {};
     private static final ParameterizedTypeReference<List<UsuarioPublicoResponse>> LISTA_USUARIO_PUBLICO = new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<PaginaResponse<UsuarioPublicoResponse>> PAGINA_USUARIO_PUBLICO = new ParameterizedTypeReference<>() {};
     private static final ParameterizedTypeReference<PaginaResponse<RegiaoResponse>> PAGINA_REGIAO = new ParameterizedTypeReference<>() {};
 
     private final RestClient appRestClient;
@@ -241,6 +244,42 @@ public class AppClient {
                         .queryParam("size", pageable.getPageSize())
                         .build())
                 .retrieve().body(PAGINA_AMIZADE);
+    }
+
+    // ----------------------------- Seguidores ---------------------------
+
+    public void seguir(String seguidoId) {
+        appRestClient.post().uri("/seguidor/{id}", seguidoId).retrieve().toBodilessEntity();
+    }
+
+    public void deixarDeSeguir(String seguidoId) {
+        appRestClient.delete().uri("/seguidor/{id}", seguidoId).retrieve().toBodilessEntity();
+    }
+
+    public PaginaResponse<UsuarioPublicoResponse> getSeguidores(String usuarioId, Pageable pageable) {
+        return appRestClient.get()
+                .uri(b -> b.path("/seguidor/seguidores/{id}")
+                        .queryParam("page", pageable.getPageNumber())
+                        .queryParam("size", pageable.getPageSize()).build(usuarioId))
+                .retrieve().body(PAGINA_USUARIO_PUBLICO);
+    }
+
+    public PaginaResponse<UsuarioPublicoResponse> getSeguindo(String usuarioId, Pageable pageable) {
+        return appRestClient.get()
+                .uri(b -> b.path("/seguidor/seguindo/{id}")
+                        .queryParam("page", pageable.getPageNumber())
+                        .queryParam("size", pageable.getPageSize()).build(usuarioId))
+                .retrieve().body(PAGINA_USUARIO_PUBLICO);
+    }
+
+    public ContadoresResponse getContadores(String usuarioId) {
+        return appRestClient.get().uri("/seguidor/contadores/{id}", usuarioId)
+                .retrieve().body(ContadoresResponse.class);
+    }
+
+    public StatusSeguirResponse getStatusSeguir(String usuarioId) {
+        return appRestClient.get().uri("/seguidor/status/{id}", usuarioId)
+                .retrieve().body(StatusSeguirResponse.class);
     }
 
     // --------------------------- Busca de usuario -----------------------
