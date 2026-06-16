@@ -2,6 +2,7 @@ package com.trisha.bff.service;
 
 import com.trisha.bff.client.AppClient;
 import com.trisha.bff.model.dto.request.AventuraRequest;
+import com.trisha.bff.model.dto.request.MoverRegiaoRequest;
 import com.trisha.bff.model.dto.response.AventuraDetalheResponse;
 import com.trisha.bff.model.dto.response.AventuraResponse;
 import com.trisha.bff.model.dto.response.CaminhoResponse;
@@ -80,6 +81,16 @@ public class AventuraBffService {
     public AventuraResponse atualizarStatus(String id, String status) {
         log.info("BFF: atualizando status da aventura {} para {}", id, status);
         return appClient.atualizarStatusAventura(id, status);
+    }
+
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "aventura", key = "#id"),
+            @CacheEvict(cacheNames = "aventura-detalhe", key = "#id"),
+            @CacheEvict(cacheNames = "aventuras-usuario", allEntries = true)
+    })
+    public AventuraResponse moverRegiao(String id, MoverRegiaoRequest request) {
+        log.info("BFF: movendo aventura {} de pasta", id);
+        return appClient.moverRegiaoAventura(id, request);
     }
 
     @CacheEvict(cacheNames = "aventura", key = "#aventuraId")

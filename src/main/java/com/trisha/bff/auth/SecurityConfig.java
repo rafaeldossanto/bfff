@@ -23,7 +23,7 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/bff/usuarios", "/bff/usuarios/login-social", "/bff/auth/dev-login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/bff/usuarios/confirmar-email", "/bff/regioes").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/bff/usuarios/confirmar-email").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/actuator/health").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));

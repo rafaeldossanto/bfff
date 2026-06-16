@@ -1,6 +1,7 @@
 package com.trisha.bff.controller;
 
 import com.trisha.bff.model.dto.request.AventuraRequest;
+import com.trisha.bff.model.dto.request.MoverRegiaoRequest;
 import com.trisha.bff.model.dto.response.AventuraDetalheResponse;
 import com.trisha.bff.model.dto.response.AventuraResponse;
 import com.trisha.bff.model.dto.response.PaginaResponse;
@@ -48,6 +49,11 @@ public class AventuraController {
     @PatchMapping("/{id}/status")
     public AventuraResponse atualizarStatus(@PathVariable String id, @RequestParam String status) {
         return aventuraService.atualizarStatus(id, status);
+    }
+
+    @PatchMapping("/{id}/regiao")
+    public AventuraResponse moverRegiao(@PathVariable String id, @RequestBody MoverRegiaoRequest request) {
+        return aventuraService.moverRegiao(id, request);
     }
 
     @PostMapping("/{id}/participante")

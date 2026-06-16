@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotBlank;
  * desacopla o BFF de duplicar os enums dos servicos.
  */
 public record AventuraRequest(
-        @NotBlank String regiaoId,
+        String regiaoId,
         @NotBlank String destino,
         String visibilidade
 ) {}

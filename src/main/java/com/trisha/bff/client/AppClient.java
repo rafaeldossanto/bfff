@@ -5,7 +5,9 @@ import com.trisha.bff.model.dto.request.AventuraRequest;
 import com.trisha.bff.model.dto.request.CaminhoRequest;
 import com.trisha.bff.model.dto.request.EvidenciaRequest;
 import com.trisha.bff.model.dto.request.MidiaRequest;
+import com.trisha.bff.model.dto.request.MoverRegiaoRequest;
 import com.trisha.bff.model.dto.request.PontoInteresseRequest;
+import com.trisha.bff.model.dto.request.RegiaoRequest;
 import com.trisha.bff.model.dto.response.AmizadeResponse;
 import com.trisha.bff.model.dto.response.AventuraResponse;
 import com.trisha.bff.model.dto.response.CaminhoResponse;
@@ -34,7 +36,7 @@ public class AppClient {
     private static final ParameterizedTypeReference<PaginaResponse<MidiaResponse>> PAGINA_MIDIA = new ParameterizedTypeReference<>() {};
     private static final ParameterizedTypeReference<PaginaResponse<AmizadeResponse>> PAGINA_AMIZADE = new ParameterizedTypeReference<>() {};
     private static final ParameterizedTypeReference<List<UsuarioPublicoResponse>> LISTA_USUARIO_PUBLICO = new ParameterizedTypeReference<>() {};
-    private static final ParameterizedTypeReference<List<RegiaoResponse>> LISTA_REGIAO = new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<PaginaResponse<RegiaoResponse>> PAGINA_REGIAO = new ParameterizedTypeReference<>() {};
 
     private final RestClient appRestClient;
 
@@ -43,13 +45,57 @@ public class AppClient {
     }
 
 
-    public List<RegiaoResponse> listarRegioes() {
-        return appRestClient.get().uri("/regiao")
-                .retrieve().body(LISTA_REGIAO);
+    public RegiaoResponse criarRegiao(RegiaoRequest request) {
+        return appRestClient.post().uri("/regiao").body(request)
+                .retrieve().body(RegiaoResponse.class);
+    }
+
+    public PaginaResponse<RegiaoResponse> getMinhasRegioes(Pageable pageable) {
+        return appRestClient.get()
+                .uri(b -> b.path("/regiao")
+                        .queryParam("page", pageable.getPageNumber())
+                        .queryParam("size", pageable.getPageSize()).build())
+                .retrieve().body(PAGINA_REGIAO);
+    }
+
+    public PaginaResponse<RegiaoResponse> descobrirRegioes(Pageable pageable) {
+        return appRestClient.get()
+                .uri(b -> b.path("/regiao/descobrir")
+                        .queryParam("page", pageable.getPageNumber())
+                        .queryParam("size", pageable.getPageSize()).build())
+                .retrieve().body(PAGINA_REGIAO);
+    }
+
+    public RegiaoResponse getRegiao(String id) {
+        return appRestClient.get().uri("/regiao/{id}", id)
+                .retrieve().body(RegiaoResponse.class);
+    }
+
+    public PaginaResponse<AventuraResponse> getAventurasByRegiao(String regiaoId, Pageable pageable) {
+        return appRestClient.get()
+                .uri(b -> b.path("/regiao/{id}/aventuras")
+                        .queryParam("page", pageable.getPageNumber())
+                        .queryParam("size", pageable.getPageSize()).build(regiaoId))
+                .retrieve().body(PAGINA_AVENTURA);
+    }
+
+    public RegiaoResponse atualizarRegiao(String id, RegiaoRequest request) {
+        return appRestClient.put().uri("/regiao/{id}", id).body(request)
+                .retrieve().body(RegiaoResponse.class);
+    }
+
+    public void deletarRegiao(String id) {
+        appRestClient.delete().uri("/regiao/{id}", id)
+                .retrieve().toBodilessEntity();
     }
 
     public AventuraResponse criarAventura(AventuraRequest request) {
         return appRestClient.post().uri("/aventura").body(request)
+                .retrieve().body(AventuraResponse.class);
+    }
+
+    public AventuraResponse moverRegiaoAventura(String id, MoverRegiaoRequest request) {
+        return appRestClient.patch().uri("/aventura/{id}/regiao", id).body(request)
                 .retrieve().body(AventuraResponse.class);
     }
 
