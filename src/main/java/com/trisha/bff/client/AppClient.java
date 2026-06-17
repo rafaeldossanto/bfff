@@ -8,6 +8,7 @@ import com.trisha.bff.model.dto.request.MidiaRequest;
 import com.trisha.bff.model.dto.request.MoverRegiaoRequest;
 import com.trisha.bff.model.dto.request.PontoInteresseRequest;
 import com.trisha.bff.model.dto.request.RegiaoRequest;
+import com.trisha.bff.model.dto.request.SeguirRequest;
 import com.trisha.bff.model.dto.response.AmizadeResponse;
 import com.trisha.bff.model.dto.response.AventuraResponse;
 import com.trisha.bff.model.dto.response.ContadoresResponse;
@@ -22,6 +23,7 @@ import com.trisha.bff.model.dto.response.UsuarioPublicoResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -248,37 +250,42 @@ public class AppClient {
 
     // ----------------------------- Seguidores ---------------------------
 
-    public void seguir(String seguidoId) {
-        appRestClient.post().uri("/seguidor/{id}", seguidoId).retrieve().toBodilessEntity();
+    public void seguir(String codigo) {
+        appRestClient.post().uri("/seguidor").body(new SeguirRequest(codigo)).retrieve().toBodilessEntity();
     }
 
-    public void deixarDeSeguir(String seguidoId) {
-        appRestClient.delete().uri("/seguidor/{id}", seguidoId).retrieve().toBodilessEntity();
+    public void deixarDeSeguir(String codigo) {
+        appRestClient.method(HttpMethod.DELETE).uri("/seguidor").body(new SeguirRequest(codigo))
+                .retrieve().toBodilessEntity();
     }
 
-    public PaginaResponse<UsuarioPublicoResponse> getSeguidores(String usuarioId, Pageable pageable) {
+    public PaginaResponse<UsuarioPublicoResponse> getSeguidores(String codigo, Pageable pageable) {
         return appRestClient.get()
-                .uri(b -> b.path("/seguidor/seguidores/{id}")
+                .uri(b -> b.path("/seguidor/seguidores")
+                        .queryParam("codigo", codigo)
                         .queryParam("page", pageable.getPageNumber())
-                        .queryParam("size", pageable.getPageSize()).build(usuarioId))
+                        .queryParam("size", pageable.getPageSize()).build())
                 .retrieve().body(PAGINA_USUARIO_PUBLICO);
     }
 
-    public PaginaResponse<UsuarioPublicoResponse> getSeguindo(String usuarioId, Pageable pageable) {
+    public PaginaResponse<UsuarioPublicoResponse> getSeguindo(String codigo, Pageable pageable) {
         return appRestClient.get()
-                .uri(b -> b.path("/seguidor/seguindo/{id}")
+                .uri(b -> b.path("/seguidor/seguindo")
+                        .queryParam("codigo", codigo)
                         .queryParam("page", pageable.getPageNumber())
-                        .queryParam("size", pageable.getPageSize()).build(usuarioId))
+                        .queryParam("size", pageable.getPageSize()).build())
                 .retrieve().body(PAGINA_USUARIO_PUBLICO);
     }
 
-    public ContadoresResponse getContadores(String usuarioId) {
-        return appRestClient.get().uri("/seguidor/contadores/{id}", usuarioId)
+    public ContadoresResponse getContadores(String codigo) {
+        return appRestClient.get()
+                .uri(b -> b.path("/seguidor/contadores").queryParam("codigo", codigo).build())
                 .retrieve().body(ContadoresResponse.class);
     }
 
-    public StatusSeguirResponse getStatusSeguir(String usuarioId) {
-        return appRestClient.get().uri("/seguidor/status/{id}", usuarioId)
+    public StatusSeguirResponse getStatusSeguir(String codigo) {
+        return appRestClient.get()
+                .uri(b -> b.path("/seguidor/status").queryParam("codigo", codigo).build())
                 .retrieve().body(StatusSeguirResponse.class);
     }
 
