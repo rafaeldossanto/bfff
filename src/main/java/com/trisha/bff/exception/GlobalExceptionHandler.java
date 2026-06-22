@@ -31,6 +31,12 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.SERVICE_UNAVAILABLE, "Servico temporariamente indisponivel");
     }
 
+    @ExceptionHandler(ServiceUnavailableException.class)
+    public ResponseEntity<Map<String, Object>> handleServiceUnavailable(ServiceUnavailableException ex) {
+        log.error("[DOWNSTREAM] servico indisponivel (circuit breaker): {}", ex.getMessage());
+        return buildResponse(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage());
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
         log.warn("[EXCEPTION] IllegalArgumentException: {}", ex.getMessage());

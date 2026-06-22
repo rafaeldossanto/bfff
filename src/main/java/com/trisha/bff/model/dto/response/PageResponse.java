@@ -18,4 +18,9 @@ public record PageResponse<T>(
         @JsonProperty("size") int size,
         @JsonProperty("totalElements") long totalElements,
         @JsonProperty("totalPages") int totalPages
-) {}
+) {
+    /** Fallback vazio usado pelos circuit breakers ao retornar listas degradadas. */
+    public static <T> PageResponse<T> empty() {
+        return new PageResponse<>(List.of(), 0, 0, 0, 0);
+    }
+}

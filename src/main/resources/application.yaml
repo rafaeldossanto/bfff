@@ -43,3 +43,30 @@ management:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      downstream:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+    instances:
+      app: { base-config: downstream }
+      cadastro: { base-config: downstream }
+      localizacao: { base-config: downstream }
+      midia: { base-config: downstream }
+  retry:
+    configs:
+      downstream:
+        max-attempts: 2
+        wait-duration: 200ms
+        retry-exceptions:
+          - java.io.IOException
+          - org.springframework.web.client.ResourceAccessException
+    instances:
+      app: { base-config: downstream }
+      cadastro: { base-config: downstream }
+      localizacao: { base-config: downstream }
+      midia: { base-config: downstream }
