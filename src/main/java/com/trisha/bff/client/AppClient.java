@@ -1,25 +1,25 @@
 package com.trisha.bff.client;
 
-import com.trisha.bff.model.dto.request.AmizadeRequest;
-import com.trisha.bff.model.dto.request.AventuraRequest;
-import com.trisha.bff.model.dto.request.CaminhoRequest;
-import com.trisha.bff.model.dto.request.EvidenciaRequest;
-import com.trisha.bff.model.dto.request.MidiaRequest;
-import com.trisha.bff.model.dto.request.MoverRegiaoRequest;
-import com.trisha.bff.model.dto.request.PontoInteresseRequest;
-import com.trisha.bff.model.dto.request.RegiaoRequest;
-import com.trisha.bff.model.dto.request.SeguirRequest;
-import com.trisha.bff.model.dto.response.AmizadeResponse;
-import com.trisha.bff.model.dto.response.AventuraResponse;
-import com.trisha.bff.model.dto.response.ContadoresResponse;
-import com.trisha.bff.model.dto.response.StatusSeguirResponse;
-import com.trisha.bff.model.dto.response.CaminhoResponse;
-import com.trisha.bff.model.dto.response.EvidenciaResponse;
-import com.trisha.bff.model.dto.response.MidiaResponse;
-import com.trisha.bff.model.dto.response.PaginaResponse;
-import com.trisha.bff.model.dto.response.PontoInteresseResponse;
-import com.trisha.bff.model.dto.response.RegiaoResponse;
-import com.trisha.bff.model.dto.response.UsuarioPublicoResponse;
+import com.trisha.bff.model.dto.request.FriendshipRequest;
+import com.trisha.bff.model.dto.request.AdventureRequest;
+import com.trisha.bff.model.dto.request.PathRequest;
+import com.trisha.bff.model.dto.request.EvidenceRequest;
+import com.trisha.bff.model.dto.request.MediaRequest;
+import com.trisha.bff.model.dto.request.MoveRegionRequest;
+import com.trisha.bff.model.dto.request.PointOfInterestRequest;
+import com.trisha.bff.model.dto.request.RegionRequest;
+import com.trisha.bff.model.dto.request.FollowRequest;
+import com.trisha.bff.model.dto.response.FriendshipResponse;
+import com.trisha.bff.model.dto.response.AdventureResponse;
+import com.trisha.bff.model.dto.response.CountersResponse;
+import com.trisha.bff.model.dto.response.FollowStatusResponse;
+import com.trisha.bff.model.dto.response.PathResponse;
+import com.trisha.bff.model.dto.response.EvidenceResponse;
+import com.trisha.bff.model.dto.response.MediaResponse;
+import com.trisha.bff.model.dto.response.PageResponse;
+import com.trisha.bff.model.dto.response.PointOfInterestResponse;
+import com.trisha.bff.model.dto.response.RegionResponse;
+import com.trisha.bff.model.dto.response.PublicUserResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
@@ -34,14 +34,14 @@ import java.util.List;
 @Slf4j
 public class AppClient {
 
-    private static final ParameterizedTypeReference<PaginaResponse<AventuraResponse>> PAGINA_AVENTURA = new ParameterizedTypeReference<>() {};
-    private static final ParameterizedTypeReference<PaginaResponse<CaminhoResponse>> PAGINA_CAMINHO = new ParameterizedTypeReference<>() {};
-    private static final ParameterizedTypeReference<PaginaResponse<PontoInteresseResponse>> PAGINA_PONTO = new ParameterizedTypeReference<>() {};
-    private static final ParameterizedTypeReference<PaginaResponse<MidiaResponse>> PAGINA_MIDIA = new ParameterizedTypeReference<>() {};
-    private static final ParameterizedTypeReference<PaginaResponse<AmizadeResponse>> PAGINA_AMIZADE = new ParameterizedTypeReference<>() {};
-    private static final ParameterizedTypeReference<List<UsuarioPublicoResponse>> LISTA_USUARIO_PUBLICO = new ParameterizedTypeReference<>() {};
-    private static final ParameterizedTypeReference<PaginaResponse<UsuarioPublicoResponse>> PAGINA_USUARIO_PUBLICO = new ParameterizedTypeReference<>() {};
-    private static final ParameterizedTypeReference<PaginaResponse<RegiaoResponse>> PAGINA_REGIAO = new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<PageResponse<AdventureResponse>> PAGE_ADVENTURE = new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<PageResponse<PathResponse>> PAGE_PATH = new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<PageResponse<PointOfInterestResponse>> PAGE_POINT = new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<PageResponse<MediaResponse>> PAGE_MEDIA = new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<PageResponse<FriendshipResponse>> PAGE_FRIENDSHIP = new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<List<PublicUserResponse>> LIST_PUBLIC_USER = new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<PageResponse<PublicUserResponse>> PAGE_PUBLIC_USER = new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<PageResponse<RegionResponse>> PAGE_REGION = new ParameterizedTypeReference<>() {};
 
     private final RestClient appRestClient;
 
@@ -50,255 +50,255 @@ public class AppClient {
     }
 
 
-    public RegiaoResponse criarRegiao(RegiaoRequest request) {
+    public RegionResponse createRegion(RegionRequest request) {
         return appRestClient.post().uri("/regiao").body(request)
-                .retrieve().body(RegiaoResponse.class);
+                .retrieve().body(RegionResponse.class);
     }
 
-    public PaginaResponse<RegiaoResponse> getMinhasRegioes(Pageable pageable) {
+    public PageResponse<RegionResponse> getMyRegions(Pageable pageable) {
         return appRestClient.get()
                 .uri(b -> b.path("/regiao")
                         .queryParam("page", pageable.getPageNumber())
                         .queryParam("size", pageable.getPageSize()).build())
-                .retrieve().body(PAGINA_REGIAO);
+                .retrieve().body(PAGE_REGION);
     }
 
-    public PaginaResponse<RegiaoResponse> descobrirRegioes(Pageable pageable) {
+    public PageResponse<RegionResponse> discoverRegions(Pageable pageable) {
         return appRestClient.get()
                 .uri(b -> b.path("/regiao/descobrir")
                         .queryParam("page", pageable.getPageNumber())
                         .queryParam("size", pageable.getPageSize()).build())
-                .retrieve().body(PAGINA_REGIAO);
+                .retrieve().body(PAGE_REGION);
     }
 
-    public RegiaoResponse getRegiao(String id) {
+    public RegionResponse getRegion(String id) {
         return appRestClient.get().uri("/regiao/{id}", id)
-                .retrieve().body(RegiaoResponse.class);
+                .retrieve().body(RegionResponse.class);
     }
 
-    public PaginaResponse<AventuraResponse> getAventurasByRegiao(String regiaoId, Pageable pageable) {
+    public PageResponse<AdventureResponse> getAdventuresByRegion(String regionId, Pageable pageable) {
         return appRestClient.get()
                 .uri(b -> b.path("/regiao/{id}/aventuras")
                         .queryParam("page", pageable.getPageNumber())
-                        .queryParam("size", pageable.getPageSize()).build(regiaoId))
-                .retrieve().body(PAGINA_AVENTURA);
+                        .queryParam("size", pageable.getPageSize()).build(regionId))
+                .retrieve().body(PAGE_ADVENTURE);
     }
 
-    public RegiaoResponse atualizarRegiao(String id, RegiaoRequest request) {
+    public RegionResponse updateRegion(String id, RegionRequest request) {
         return appRestClient.put().uri("/regiao/{id}", id).body(request)
-                .retrieve().body(RegiaoResponse.class);
+                .retrieve().body(RegionResponse.class);
     }
 
-    public void deletarRegiao(String id) {
+    public void deleteRegion(String id) {
         appRestClient.delete().uri("/regiao/{id}", id)
                 .retrieve().toBodilessEntity();
     }
 
-    public AventuraResponse criarAventura(AventuraRequest request) {
+    public AdventureResponse createAdventure(AdventureRequest request) {
         return appRestClient.post().uri("/aventura").body(request)
-                .retrieve().body(AventuraResponse.class);
+                .retrieve().body(AdventureResponse.class);
     }
 
-    public AventuraResponse moverRegiaoAventura(String id, MoverRegiaoRequest request) {
+    public AdventureResponse moveAdventureRegion(String id, MoveRegionRequest request) {
         return appRestClient.patch().uri("/aventura/{id}/regiao", id).body(request)
-                .retrieve().body(AventuraResponse.class);
+                .retrieve().body(AdventureResponse.class);
     }
 
-    public AventuraResponse getAventura(String id) {
+    public AdventureResponse getAdventure(String id) {
         return appRestClient.get().uri("/aventura/{id}", id)
-                .retrieve().body(AventuraResponse.class);
+                .retrieve().body(AdventureResponse.class);
     }
 
-    public PaginaResponse<AventuraResponse> getAventurasByUsuario(String usuarioId, Pageable pageable) {
+    public PageResponse<AdventureResponse> getAdventuresByUser(String userId, Pageable pageable) {
         return appRestClient.get()
                 .uri(b -> b.path("/aventura/usuario/{usuarioId}")
                         .queryParam("page", pageable.getPageNumber())
                         .queryParam("size", pageable.getPageSize())
-                        .build(usuarioId))
-                .retrieve().body(PAGINA_AVENTURA);
+                        .build(userId))
+                .retrieve().body(PAGE_ADVENTURE);
     }
 
-    public AventuraResponse atualizarStatusAventura(String id, String status) {
+    public AdventureResponse updateAdventureStatus(String id, String status) {
         return appRestClient.patch()
                 .uri(b -> b.path("/aventura/{id}/status").queryParam("status", status).build(id))
-                .retrieve().body(AventuraResponse.class);
+                .retrieve().body(AdventureResponse.class);
     }
 
-    public void adicionarParticipante(String aventuraId, String usuarioId) {
+    public void addParticipant(String adventureId, String userId) {
         appRestClient.post()
-                .uri(b -> b.path("/aventura/{id}/participante").queryParam("usuarioId", usuarioId).build(aventuraId))
+                .uri(b -> b.path("/aventura/{id}/participante").queryParam("usuarioId", userId).build(adventureId))
                 .retrieve().toBodilessEntity();
     }
 
-    public void deletarAventura(String id) {
+    public void deleteAdventure(String id) {
         appRestClient.delete().uri("/aventura/{id}", id)
                 .retrieve().toBodilessEntity();
     }
 
-    public CaminhoResponse iniciarCaminho(CaminhoRequest request) {
+    public PathResponse startPath(PathRequest request) {
         return appRestClient.post().uri("/caminho").body(request)
-                .retrieve().body(CaminhoResponse.class);
+                .retrieve().body(PathResponse.class);
     }
 
-    public CaminhoResponse finalizarCaminho(String id, Double distanciaTotalKm) {
+    public PathResponse finishPath(String id, Double totalDistanceKm) {
         return appRestClient.patch()
-                .uri(b -> b.path("/caminho/{id}/finalizar").queryParam("distanciaTotalKm", distanciaTotalKm).build(id))
-                .retrieve().body(CaminhoResponse.class);
+                .uri(b -> b.path("/caminho/{id}/finalizar").queryParam("distanciaTotalKm", totalDistanceKm).build(id))
+                .retrieve().body(PathResponse.class);
     }
 
-    public PaginaResponse<CaminhoResponse> getCaminhosByAventura(String aventuraId, Pageable pageable) {
+    public PageResponse<PathResponse> getPathsByAdventure(String adventureId, Pageable pageable) {
         return appRestClient.get()
                 .uri(b -> b.path("/caminho/aventura/{aventuraId}")
                         .queryParam("page", pageable.getPageNumber())
                         .queryParam("size", pageable.getPageSize())
-                        .build(aventuraId))
-                .retrieve().body(PAGINA_CAMINHO);
+                        .build(adventureId))
+                .retrieve().body(PAGE_PATH);
     }
 
-    public PaginaResponse<CaminhoResponse> getCaminhosByUsuario(String usuarioId, Pageable pageable) {
+    public PageResponse<PathResponse> getPathsByUser(String userId, Pageable pageable) {
         return appRestClient.get()
                 .uri(b -> b.path("/caminho/usuario/{usuarioId}")
                         .queryParam("page", pageable.getPageNumber())
                         .queryParam("size", pageable.getPageSize())
-                        .build(usuarioId))
-                .retrieve().body(PAGINA_CAMINHO);
+                        .build(userId))
+                .retrieve().body(PAGE_PATH);
     }
 
 
-    public PontoInteresseResponse criarPonto(PontoInteresseRequest request) {
+    public PointOfInterestResponse createPoint(PointOfInterestRequest request) {
         return appRestClient.post().uri("/ponto-interesse").body(request)
-                .retrieve().body(PontoInteresseResponse.class);
+                .retrieve().body(PointOfInterestResponse.class);
     }
 
-    public PontoInteresseResponse getPonto(String id) {
+    public PointOfInterestResponse getPoint(String id) {
         return appRestClient.get().uri("/ponto-interesse/{id}", id)
-                .retrieve().body(PontoInteresseResponse.class);
+                .retrieve().body(PointOfInterestResponse.class);
     }
 
-    public PaginaResponse<PontoInteresseResponse> getPontosByCaminho(String caminhoId, Pageable pageable) {
+    public PageResponse<PointOfInterestResponse> getPointsByPath(String pathId, Pageable pageable) {
         return appRestClient.get()
                 .uri(b -> b.path("/ponto-interesse/caminho/{caminhoId}")
                         .queryParam("page", pageable.getPageNumber())
                         .queryParam("size", pageable.getPageSize())
-                        .build(caminhoId))
-                .retrieve().body(PAGINA_PONTO);
+                        .build(pathId))
+                .retrieve().body(PAGE_POINT);
     }
 
-    public EvidenciaResponse adicionarEvidencia(EvidenciaRequest request) {
+    public EvidenceResponse addEvidence(EvidenceRequest request) {
         return appRestClient.post().uri("/ponto-interesse/evidencia").body(request)
-                .retrieve().body(EvidenciaResponse.class);
+                .retrieve().body(EvidenceResponse.class);
     }
 
 
-    public MidiaResponse salvarMidia(MidiaRequest request) {
+    public MediaResponse saveMedia(MediaRequest request) {
         return appRestClient.post().uri("/midia").body(request)
-                .retrieve().body(MidiaResponse.class);
+                .retrieve().body(MediaResponse.class);
     }
 
-    public PaginaResponse<MidiaResponse> getMidiasByAventura(String aventuraId, Pageable pageable) {
+    public PageResponse<MediaResponse> getMediaByAdventure(String adventureId, Pageable pageable) {
         return appRestClient.get()
                 .uri(b -> b.path("/midia/aventura/{aventuraId}")
                         .queryParam("page", pageable.getPageNumber())
                         .queryParam("size", pageable.getPageSize())
-                        .build(aventuraId))
-                .retrieve().body(PAGINA_MIDIA);
+                        .build(adventureId))
+                .retrieve().body(PAGE_MEDIA);
     }
 
-    public PaginaResponse<MidiaResponse> getMidiasByCaminho(String caminhoId, Pageable pageable) {
+    public PageResponse<MediaResponse> getMediaByPath(String pathId, Pageable pageable) {
         return appRestClient.get()
                 .uri(b -> b.path("/midia/caminho/{caminhoId}")
                         .queryParam("page", pageable.getPageNumber())
                         .queryParam("size", pageable.getPageSize())
-                        .build(caminhoId))
-                .retrieve().body(PAGINA_MIDIA);
+                        .build(pathId))
+                .retrieve().body(PAGE_MEDIA);
     }
 
-    public void deletarMidia(String id) {
+    public void deleteMedia(String id) {
         appRestClient.delete().uri("/midia/{id}", id)
                 .retrieve().toBodilessEntity();
     }
 
 
-    public AmizadeResponse solicitarAmizade(AmizadeRequest request) {
+    public FriendshipResponse requestFriendship(FriendshipRequest request) {
         return appRestClient.post().uri("/amizade").body(request)
-                .retrieve().body(AmizadeResponse.class);
+                .retrieve().body(FriendshipResponse.class);
     }
 
-    public AmizadeResponse responderAmizade(String id, String status) {
+    public FriendshipResponse respondFriendship(String id, String status) {
         return appRestClient.patch()
                 .uri(b -> b.path("/amizade/{id}/responder").queryParam("status", status).build(id))
-                .retrieve().body(AmizadeResponse.class);
+                .retrieve().body(FriendshipResponse.class);
     }
 
-    public PaginaResponse<AmizadeResponse> getPendentes(Pageable pageable) {
+    public PageResponse<FriendshipResponse> getPending(Pageable pageable) {
         return appRestClient.get()
                 .uri(b -> b.path("/amizade/pendentes")
                         .queryParam("page", pageable.getPageNumber())
                         .queryParam("size", pageable.getPageSize())
                         .build())
-                .retrieve().body(PAGINA_AMIZADE);
+                .retrieve().body(PAGE_FRIENDSHIP);
     }
 
-    public PaginaResponse<AmizadeResponse> getAmigos(Pageable pageable) {
+    public PageResponse<FriendshipResponse> getFriends(Pageable pageable) {
         return appRestClient.get()
                 .uri(b -> b.path("/amizade/amigos")
                         .queryParam("page", pageable.getPageNumber())
                         .queryParam("size", pageable.getPageSize())
                         .build())
-                .retrieve().body(PAGINA_AMIZADE);
+                .retrieve().body(PAGE_FRIENDSHIP);
     }
 
     // ----------------------------- Seguidores ---------------------------
 
-    public void seguir(String codigo) {
-        appRestClient.post().uri("/seguidor").body(new SeguirRequest(codigo)).retrieve().toBodilessEntity();
+    public void follow(String code) {
+        appRestClient.post().uri("/seguidor").body(new FollowRequest(code)).retrieve().toBodilessEntity();
     }
 
-    public void deixarDeSeguir(String codigo) {
-        appRestClient.method(HttpMethod.DELETE).uri("/seguidor").body(new SeguirRequest(codigo))
+    public void unfollow(String code) {
+        appRestClient.method(HttpMethod.DELETE).uri("/seguidor").body(new FollowRequest(code))
                 .retrieve().toBodilessEntity();
     }
 
-    public PaginaResponse<UsuarioPublicoResponse> getSeguidores(String codigo, Pageable pageable) {
+    public PageResponse<PublicUserResponse> getFollowers(String code, Pageable pageable) {
         return appRestClient.get()
                 .uri(b -> b.path("/seguidor/seguidores")
-                        .queryParam("codigo", codigo)
+                        .queryParam("codigo", code)
                         .queryParam("page", pageable.getPageNumber())
                         .queryParam("size", pageable.getPageSize()).build())
-                .retrieve().body(PAGINA_USUARIO_PUBLICO);
+                .retrieve().body(PAGE_PUBLIC_USER);
     }
 
-    public PaginaResponse<UsuarioPublicoResponse> getSeguindo(String codigo, Pageable pageable) {
+    public PageResponse<PublicUserResponse> getFollowing(String code, Pageable pageable) {
         return appRestClient.get()
                 .uri(b -> b.path("/seguidor/seguindo")
-                        .queryParam("codigo", codigo)
+                        .queryParam("codigo", code)
                         .queryParam("page", pageable.getPageNumber())
                         .queryParam("size", pageable.getPageSize()).build())
-                .retrieve().body(PAGINA_USUARIO_PUBLICO);
+                .retrieve().body(PAGE_PUBLIC_USER);
     }
 
-    public ContadoresResponse getContadores(String codigo) {
+    public CountersResponse getCounters(String code) {
         return appRestClient.get()
-                .uri(b -> b.path("/seguidor/contadores").queryParam("codigo", codigo).build())
-                .retrieve().body(ContadoresResponse.class);
+                .uri(b -> b.path("/seguidor/contadores").queryParam("codigo", code).build())
+                .retrieve().body(CountersResponse.class);
     }
 
-    public StatusSeguirResponse getStatusSeguir(String codigo) {
+    public FollowStatusResponse getFollowStatus(String code) {
         return appRestClient.get()
-                .uri(b -> b.path("/seguidor/status").queryParam("codigo", codigo).build())
-                .retrieve().body(StatusSeguirResponse.class);
+                .uri(b -> b.path("/seguidor/status").queryParam("codigo", code).build())
+                .retrieve().body(FollowStatusResponse.class);
     }
 
     // --------------------------- Busca de usuario -----------------------
 
-    public UsuarioPublicoResponse buscarUsuarioPorCodigo(String codigoUsuario) {
-        return appRestClient.get().uri("/usuario/codigo/{codigo}", codigoUsuario)
-                .retrieve().body(UsuarioPublicoResponse.class);
+    public PublicUserResponse findUserByCode(String userCode) {
+        return appRestClient.get().uri("/usuario/codigo/{codigo}", userCode)
+                .retrieve().body(PublicUserResponse.class);
     }
 
-    public List<UsuarioPublicoResponse> autocompletarUsuario(String termo) {
+    public List<PublicUserResponse> autocompleteUser(String term) {
         return appRestClient.get()
-                .uri(b -> b.path("/usuario/busca").queryParam("termo", termo).build())
-                .retrieve().body(LISTA_USUARIO_PUBLICO);
+                .uri(b -> b.path("/usuario/busca").queryParam("termo", term).build())
+                .retrieve().body(LIST_PUBLIC_USER);
     }
 }

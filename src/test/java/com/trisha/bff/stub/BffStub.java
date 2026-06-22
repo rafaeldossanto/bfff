@@ -1,25 +1,25 @@
 package com.trisha.bff.stub;
 
-import com.trisha.bff.model.dto.request.AmizadeRequest;
-import com.trisha.bff.model.dto.request.AventuraRequest;
-import com.trisha.bff.model.dto.request.CaminhoRequest;
-import com.trisha.bff.model.dto.request.EvidenciaRequest;
-import com.trisha.bff.model.dto.request.MidiaRequest;
-import com.trisha.bff.model.dto.request.PontoGpsRequest;
-import com.trisha.bff.model.dto.request.PontoInteresseRequest;
-import com.trisha.bff.model.dto.request.SessaoRequest;
-import com.trisha.bff.model.dto.request.UsuarioCreateRequest;
-import com.trisha.bff.model.dto.request.UsuarioUpdateRequest;
-import com.trisha.bff.model.dto.response.AmizadeResponse;
-import com.trisha.bff.model.dto.response.AutenticacaoResponse;
-import com.trisha.bff.model.dto.response.AventuraResponse;
-import com.trisha.bff.model.dto.response.CaminhoResponse;
-import com.trisha.bff.model.dto.response.EvidenciaResponse;
-import com.trisha.bff.model.dto.response.MidiaResponse;
-import com.trisha.bff.model.dto.response.PontoGpsResponse;
-import com.trisha.bff.model.dto.response.PontoInteresseResponse;
-import com.trisha.bff.model.dto.response.SessaoResponse;
-import com.trisha.bff.model.dto.response.UsuarioResponse;
+import com.trisha.bff.model.dto.request.FriendshipRequest;
+import com.trisha.bff.model.dto.request.AdventureRequest;
+import com.trisha.bff.model.dto.request.PathRequest;
+import com.trisha.bff.model.dto.request.EvidenceRequest;
+import com.trisha.bff.model.dto.request.MediaRequest;
+import com.trisha.bff.model.dto.request.GpsPointRequest;
+import com.trisha.bff.model.dto.request.PointOfInterestRequest;
+import com.trisha.bff.model.dto.request.SessionRequest;
+import com.trisha.bff.model.dto.request.UserCreateRequest;
+import com.trisha.bff.model.dto.request.UserUpdateRequest;
+import com.trisha.bff.model.dto.response.FriendshipResponse;
+import com.trisha.bff.model.dto.response.AuthenticationResponse;
+import com.trisha.bff.model.dto.response.AdventureResponse;
+import com.trisha.bff.model.dto.response.PathResponse;
+import com.trisha.bff.model.dto.response.EvidenceResponse;
+import com.trisha.bff.model.dto.response.MediaResponse;
+import com.trisha.bff.model.dto.response.GpsPointResponse;
+import com.trisha.bff.model.dto.response.PointOfInterestResponse;
+import com.trisha.bff.model.dto.response.SessionResponse;
+import com.trisha.bff.model.dto.response.UserResponse;
 
 import java.time.LocalDateTime;
 
@@ -28,118 +28,118 @@ import java.time.LocalDateTime;
  */
 public final class BffStub {
 
-    public static final String USUARIO_ID = "usuario-1";
-    public static final String AVENTURA_ID = "aventura-1";
-    public static final String CAMINHO_ID = "caminho-1";
-    public static final String PONTO_ID = "ponto-1";
-    public static final String SESSAO_ID = "sessao-1";
+    public static final String USER_ID = "usuario-1";
+    public static final String ADVENTURE_ID = "aventura-1";
+    public static final String PATH_ID = "caminho-1";
+    public static final String POINT_ID = "ponto-1";
+    public static final String SESSION_ID = "sessao-1";
 
     private BffStub() {
     }
 
     // ----------------------------- Usuario ------------------------------
 
-    public static UsuarioResponse umUsuario() {
-        return new UsuarioResponse(USUARIO_ID, "Rafael", "rafael@trilha.com",
+    public static UserResponse aUser() {
+        return new UserResponse(USER_ID, "Rafael", "rafael@trilha.com",
                 "USR-1", "ATIVO", LocalDateTime.now(), LocalDateTime.now());
     }
 
-    public static AutenticacaoResponse umaAutenticacao() {
-        return new AutenticacaoResponse(umUsuario(), "jwt-token", 7200);
+    public static AuthenticationResponse anAuthentication() {
+        return new AuthenticationResponse(aUser(), "jwt-token", 7200);
     }
 
-    public static UsuarioCreateRequest umUsuarioCreateRequest() {
-        return new UsuarioCreateRequest("Rafael", "rafael@trilha.com", "senha123");
+    public static UserCreateRequest aUserCreateRequest() {
+        return new UserCreateRequest("Rafael", "rafael@trilha.com", "senha123");
     }
 
-    public static UsuarioUpdateRequest umUsuarioUpdateRequest() {
-        return new UsuarioUpdateRequest("Rafael Santos", null);
+    public static UserUpdateRequest aUserUpdateRequest() {
+        return new UserUpdateRequest("Rafael Santos", null);
     }
 
     // ----------------------------- Aventura -----------------------------
 
-    public static AventuraResponse umaAventura() {
-        return new AventuraResponse(AVENTURA_ID, USUARIO_ID, "regiao-1", "Pico da Bandeira",
+    public static AdventureResponse anAdventure() {
+        return new AdventureResponse(ADVENTURE_ID, USER_ID, "regiao-1", "Pico da Bandeira",
                 "PLANEJADA", "PRIVADA", LocalDateTime.now());
     }
 
-    public static AventuraRequest umaAventuraRequest() {
-        return new AventuraRequest("regiao-1", "Pico da Bandeira", "PRIVADA");
+    public static AdventureRequest anAdventureRequest() {
+        return new AdventureRequest("regiao-1", "Pico da Bandeira", "PRIVADA");
     }
 
     // ----------------------------- Caminho ------------------------------
 
-    public static CaminhoResponse umCaminho() {
-        return new CaminhoResponse(CAMINHO_ID, AVENTURA_ID, USUARIO_ID, "ROXO", 1,
+    public static PathResponse aPath() {
+        return new PathResponse(PATH_ID, ADVENTURE_ID, USER_ID, "ROXO", 1,
                 LocalDateTime.now(), null, null);
     }
 
-    public static CaminhoRequest umCaminhoRequest() {
-        return new CaminhoRequest(AVENTURA_ID, "ROXO");
+    public static PathRequest aPathRequest() {
+        return new PathRequest(ADVENTURE_ID, "ROXO");
     }
 
     // ------------------------- Ponto de interesse -----------------------
 
-    public static PontoInteresseResponse umPonto() {
-        return new PontoInteresseResponse(PONTO_ID, CAMINHO_ID, USUARIO_ID, "MIRANTE",
+    public static PointOfInterestResponse aPoint() {
+        return new PointOfInterestResponse(POINT_ID, PATH_ID, USER_ID, "MIRANTE",
                 "Mirante", "Vista", -20.43, -41.79, 3, LocalDateTime.now());
     }
 
-    public static PontoInteresseRequest umPontoRequest() {
-        return new PontoInteresseRequest(CAMINHO_ID, "MIRANTE",
+    public static PointOfInterestRequest aPointRequest() {
+        return new PointOfInterestRequest(PATH_ID, "MIRANTE",
                 "Mirante", "Vista", -20.43, -41.79);
     }
 
-    public static EvidenciaResponse umaEvidencia() {
-        return new EvidenciaResponse("evidencia-1", PONTO_ID, USUARIO_ID,
+    public static EvidenceResponse anEvidence() {
+        return new EvidenceResponse("evidencia-1", POINT_ID, USER_ID,
                 "https://cdn/foto.jpg", "VISTA", true, LocalDateTime.now());
     }
 
-    public static EvidenciaRequest umaEvidenciaRequest() {
-        return new EvidenciaRequest(PONTO_ID, "https://cdn/foto.jpg",
+    public static EvidenceRequest anEvidenceRequest() {
+        return new EvidenceRequest(POINT_ID, "https://cdn/foto.jpg",
                 "VISTA", -20.43, -41.79);
     }
 
     // ------------------------------ Midia -------------------------------
 
-    public static MidiaResponse umaMidia() {
-        return new MidiaResponse("midia-1", AVENTURA_ID, CAMINHO_ID, "FOTO",
+    public static MediaResponse aMedia() {
+        return new MediaResponse("midia-1", ADVENTURE_ID, PATH_ID, "FOTO",
                 "https://cdn/midia.jpg", 0.30, 1.5, LocalDateTime.now());
     }
 
-    public static MidiaRequest umaMidiaRequest() {
-        return new MidiaRequest(AVENTURA_ID, CAMINHO_ID, "FOTO",
+    public static MediaRequest aMediaRequest() {
+        return new MediaRequest(ADVENTURE_ID, PATH_ID, "FOTO",
                 "https://cdn/midia.jpg", -20.43, -41.79, 1.5, 0.30);
     }
 
     // ----------------------------- Amizade ------------------------------
 
-    public static AmizadeResponse umaAmizade() {
-        return new AmizadeResponse("amizade-1", USUARIO_ID, "usuario-2", "ACEITA",
+    public static FriendshipResponse aFriendship() {
+        return new FriendshipResponse("amizade-1", USER_ID, "usuario-2", "ACEITA",
                 LocalDateTime.now(), LocalDateTime.now());
     }
 
-    public static AmizadeRequest umaAmizadeRequest() {
-        return new AmizadeRequest("rafael#2");
+    public static FriendshipRequest aFriendshipRequest() {
+        return new FriendshipRequest("rafael#2");
     }
 
     // ---------------------------- Localizacao ---------------------------
 
-    public static SessaoResponse umaSessao() {
-        return new SessaoResponse(SESSAO_ID, CAMINHO_ID, USUARIO_ID, "EM_ANDAMENTO",
+    public static SessionResponse aSession() {
+        return new SessionResponse(SESSION_ID, PATH_ID, USER_ID, "EM_ANDAMENTO",
                 false, 5.0, null, LocalDateTime.now(), null);
     }
 
-    public static SessaoRequest umaSessaoRequest() {
-        return new SessaoRequest(CAMINHO_ID, USUARIO_ID, true, 10.0);
+    public static SessionRequest aSessionRequest() {
+        return new SessionRequest(PATH_ID, USER_ID, true, 10.0);
     }
 
-    public static PontoGpsResponse umPontoGps() {
-        return new PontoGpsResponse("gps-1", SESSAO_ID, -20.43, -41.79, 800.0, 5.0, 1.2,
+    public static GpsPointResponse aGpsPoint() {
+        return new GpsPointResponse("gps-1", SESSION_ID, -20.43, -41.79, 800.0, 5.0, 1.2,
                 1, LocalDateTime.now(), null, null);
     }
 
-    public static PontoGpsRequest umPontoGpsRequest() {
-        return new PontoGpsRequest(SESSAO_ID, -20.43, -41.79, 800.0, 5.0, 1.2);
+    public static GpsPointRequest aGpsPointRequest() {
+        return new GpsPointRequest(SESSION_ID, -20.43, -41.79, 800.0, 5.0, 1.2);
     }
 }

@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleDownstream(HttpStatusCodeException ex) {
         HttpStatusCode status = ex.getStatusCode();
         log.warn("[DOWNSTREAM] {} respondeu {}: {}", ex.getClass().getSimpleName(), status, ex.getResponseBodyAsString());
-        return buildResponse(status, mensagemDoDownstream(ex));
+        return buildResponse(status, downstreamMessage(ex));
     }
 
     @ExceptionHandler(ResourceAccessException.class)
@@ -43,15 +43,15 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno no servidor");
     }
 
-    private String mensagemDoDownstream(HttpStatusCodeException ex) {
-        String corpo = ex.getResponseBodyAsString();
-        return corpo.isBlank() ? ex.getStatusText() : corpo;
+    private String downstreamMessage(HttpStatusCodeException ex) {
+        String body = ex.getResponseBodyAsString();
+        return body.isBlank() ? ex.getStatusText() : body;
     }
 
-    private ResponseEntity<Map<String, Object>> buildResponse(HttpStatusCode status, String mensagem) {
+    private ResponseEntity<Map<String, Object>> buildResponse(HttpStatusCode status, String message) {
         Map<String, Object> body = new HashMap<>();
         body.put("status", status.value());
-        body.put("mensagem", mensagem);
+        body.put("mensagem", message);
         body.put("timestamp", LocalDateTime.now().toString());
         return ResponseEntity.status(status).body(body);
     }

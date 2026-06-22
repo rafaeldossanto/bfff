@@ -1,8 +1,8 @@
 package com.trisha.bff.controller;
 
 import com.trisha.bff.model.dto.request.DevLoginRequest;
-import com.trisha.bff.model.dto.response.AutenticacaoResponse;
-import com.trisha.bff.service.UsuarioBffService;
+import com.trisha.bff.model.dto.response.AuthenticationResponse;
+import com.trisha.bff.service.UserBffService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UsuarioBffService usuarioService;
+    private final UserBffService userService;
 
     @PostMapping("/dev-login")
-    public AutenticacaoResponse devLogin(@RequestBody @Valid DevLoginRequest request) {
-        return usuarioService.devLogin(request);
+    public AuthenticationResponse devLogin(@RequestBody @Valid DevLoginRequest request) {
+        return userService.devLogin(request);
     }
 }

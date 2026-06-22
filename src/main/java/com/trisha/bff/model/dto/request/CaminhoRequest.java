@@ -1,8 +1,0 @@
-package com.trisha.bff.model.dto.request;
-
-import jakarta.validation.constraints.NotBlank;
-
-public record CaminhoRequest(
-        @NotBlank String aventuraId,
-        String cor
-) {}

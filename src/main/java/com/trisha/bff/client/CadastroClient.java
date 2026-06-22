@@ -1,11 +1,11 @@
 package com.trisha.bff.client;
 
 import com.trisha.bff.model.dto.request.DevLoginRequest;
-import com.trisha.bff.model.dto.request.LoginSocialRequest;
-import com.trisha.bff.model.dto.request.UsuarioCreateRequest;
-import com.trisha.bff.model.dto.request.UsuarioUpdateRequest;
-import com.trisha.bff.model.dto.response.AutenticacaoResponse;
-import com.trisha.bff.model.dto.response.UsuarioResponse;
+import com.trisha.bff.model.dto.request.SocialLoginRequest;
+import com.trisha.bff.model.dto.request.UserCreateRequest;
+import com.trisha.bff.model.dto.request.UserUpdateRequest;
+import com.trisha.bff.model.dto.response.AuthenticationResponse;
+import com.trisha.bff.model.dto.response.UserResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -21,30 +21,30 @@ public class CadastroClient {
         this.cadastroRestClient = cadastroRestClient;
     }
 
-    public UsuarioResponse create(UsuarioCreateRequest request) {
+    public UserResponse create(UserCreateRequest request) {
         log.debug("CADASTRO: criando usuario {}", request.email());
         return cadastroRestClient.post()
                 .uri("/usuario")
                 .body(request)
                 .retrieve()
-                .body(UsuarioResponse.class);
+                .body(UserResponse.class);
     }
 
-    public UsuarioResponse update(String id, UsuarioUpdateRequest request) {
+    public UserResponse update(String id, UserUpdateRequest request) {
         log.debug("CADASTRO: atualizando usuario {}", id);
         return cadastroRestClient.put()
                 .uri("/usuario/{id}", id)
                 .body(request)
                 .retrieve()
-                .body(UsuarioResponse.class);
+                .body(UserResponse.class);
     }
 
-    public UsuarioResponse getById(String id) {
+    public UserResponse getById(String id) {
         log.debug("CADASTRO: buscando usuario {}", id);
         return cadastroRestClient.get()
                 .uri("/usuario/{id}", id)
                 .retrieve()
-                .body(UsuarioResponse.class);
+                .body(UserResponse.class);
     }
 
     public void delete(String id) {
@@ -55,7 +55,7 @@ public class CadastroClient {
                 .toBodilessEntity();
     }
 
-    public String confirmarEmail(String token) {
+    public String confirmEmail(String token) {
         log.debug("CADASTRO: confirmando email com token");
         return cadastroRestClient.get()
                 .uri(uriBuilder -> uriBuilder.path("/auth/confirmar-email").queryParam("token", token).build())
@@ -63,29 +63,29 @@ public class CadastroClient {
                 .body(String.class);
     }
 
-    public String aceitarTermos(String usuarioId) {
-        log.debug("CADASTRO: aceitando termos do usuario {}", usuarioId);
+    public String acceptTerms(String userId) {
+        log.debug("CADASTRO: aceitando termos do usuario {}", userId);
         return cadastroRestClient.post()
-                .uri(uriBuilder -> uriBuilder.path("/auth/aceitar-termos").queryParam("usuarioId", usuarioId).build())
+                .uri(uriBuilder -> uriBuilder.path("/auth/aceitar-termos").queryParam("usuarioId", userId).build())
                 .retrieve()
                 .body(String.class);
     }
 
-    public AutenticacaoResponse loginSocial(LoginSocialRequest request) {
-        log.debug("CADASTRO: login social via {}", request.provedor());
+    public AuthenticationResponse socialLogin(SocialLoginRequest request) {
+        log.debug("CADASTRO: login social via {}", request.provider());
         return cadastroRestClient.post()
                 .uri("/auth/social")
                 .body(request)
                 .retrieve()
-                .body(AutenticacaoResponse.class);
+                .body(AuthenticationResponse.class);
     }
 
-    public AutenticacaoResponse devLogin(DevLoginRequest request) {
+    public AuthenticationResponse devLogin(DevLoginRequest request) {
         log.debug("CADASTRO: dev login {}", request.email());
         return cadastroRestClient.post()
                 .uri("/auth/dev-login")
                 .body(request)
                 .retrieve()
-                .body(AutenticacaoResponse.class);
+                .body(AuthenticationResponse.class);
     }
 }

@@ -12,39 +12,39 @@ import java.time.Duration;
 @EnableConfigurationProperties(ServicosProperties.class)
 public class RestClientConfig {
 
-    private static final Duration TIMEOUT_CONEXAO = Duration.ofSeconds(2);
-    private static final Duration TIMEOUT_LEITURA = Duration.ofSeconds(5);
+    private static final Duration CONNECTION_TIMEOUT = Duration.ofSeconds(2);
+    private static final Duration READ_TIMEOUT = Duration.ofSeconds(5);
 
-    private final ServicosProperties servicos;
+    private final ServicosProperties services;
     private final BearerPropagationInterceptor bearerInterceptor;
     private final TraceIdPropagationInterceptor traceInterceptor;
 
-    public RestClientConfig(ServicosProperties servicos,
+    public RestClientConfig(ServicosProperties services,
                             BearerPropagationInterceptor bearerInterceptor,
                             TraceIdPropagationInterceptor traceInterceptor) {
-        this.servicos = servicos;
+        this.services = services;
         this.bearerInterceptor = bearerInterceptor;
         this.traceInterceptor = traceInterceptor;
     }
 
     @Bean
     public RestClient cadastroRestClient() {
-        return build(servicos.getCadastro());
+        return build(services.getCadastro());
     }
 
     @Bean
     public RestClient appRestClient() {
-        return build(servicos.getApp());
+        return build(services.getApp());
     }
 
     @Bean
     public RestClient localizacaoRestClient() {
-        return build(servicos.getLocalizacao());
+        return build(services.getLocalizacao());
     }
 
     @Bean
     public RestClient midiaRestClient() {
-        return build(servicos.getMidia());
+        return build(services.getMidia());
     }
 
     private RestClient build(String baseUrl) {
@@ -58,8 +58,8 @@ public class RestClientConfig {
 
     private SimpleClientHttpRequestFactory requestFactory() {
         var factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(TIMEOUT_CONEXAO);
-        factory.setReadTimeout(TIMEOUT_LEITURA);
+        factory.setConnectTimeout(CONNECTION_TIMEOUT);
+        factory.setReadTimeout(READ_TIMEOUT);
         return factory;
     }
 }

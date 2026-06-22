@@ -1,8 +1,8 @@
 package com.trisha.bff.client;
 
-import com.trisha.bff.model.dto.response.AmizadeResponse;
-import com.trisha.bff.model.dto.response.MidiaResponse;
-import com.trisha.bff.model.dto.response.PaginaResponse;
+import com.trisha.bff.model.dto.response.FriendshipResponse;
+import com.trisha.bff.model.dto.response.MediaResponse;
+import com.trisha.bff.model.dto.response.PageResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ class AppClientTest {
     }
 
     @Test
-    @DisplayName("getAmigos deve chamar a rota paginada e desserializar a pagina")
+    @DisplayName("getFriends deve chamar a rota paginada e desserializar a pagina")
     void deveBuscarAmigos() {
         server.expect(requestTo(BASE_URL + "/amizade/amigos?page=0&size=10"))
                 .andExpect(method(org.springframework.http.HttpMethod.GET))
@@ -50,15 +50,15 @@ class AppClientTest {
                           "number":0,"size":10,"totalElements":1,"totalPages":1}
                         """, MediaType.APPLICATION_JSON));
 
-        PaginaResponse<AmizadeResponse> amigos = appClient.getAmigos(PageRequest.of(0, 10));
+        PageResponse<FriendshipResponse> friends = appClient.getFriends(PageRequest.of(0, 10));
 
-        assertThat(amigos.conteudo()).hasSize(1);
-        assertThat(amigos.conteudo().get(0).receptorId()).isEqualTo("usuario-2");
+        assertThat(friends.content()).hasSize(1);
+        assertThat(friends.content().get(0).receiverId()).isEqualTo("usuario-2");
         server.verify();
     }
 
     @Test
-    @DisplayName("getMidiasByAventura deve repassar page/size e desserializar a pagina")
+    @DisplayName("getMediaByAdventure deve repassar page/size e desserializar a pagina")
     void deveBuscarMidias() {
         server.expect(requestTo(BASE_URL + "/midia/aventura/aventura-1?page=0&size=10"))
                 .andExpect(method(org.springframework.http.HttpMethod.GET))
@@ -69,12 +69,12 @@ class AppClientTest {
                           "number":0,"size":10,"totalElements":1,"totalPages":1}
                         """, MediaType.APPLICATION_JSON));
 
-        PaginaResponse<MidiaResponse> midias =
-                appClient.getMidiasByAventura("aventura-1", PageRequest.of(0, 10));
+        PageResponse<MediaResponse> media =
+                appClient.getMediaByAdventure("aventura-1", PageRequest.of(0, 10));
 
-        assertThat(midias.conteudo()).hasSize(1);
-        assertThat(midias.conteudo().get(0).url()).isEqualTo("https://cdn/x.jpg");
-        assertThat(midias.total()).isEqualTo(1L);
+        assertThat(media.content()).hasSize(1);
+        assertThat(media.content().get(0).url()).isEqualTo("https://cdn/x.jpg");
+        assertThat(media.totalElements()).isEqualTo(1L);
         server.verify();
     }
 
@@ -84,7 +84,7 @@ class AppClientTest {
         server.expect(requestTo(BASE_URL + "/amizade/amigos?page=0&size=10"))
                 .andRespond(withStatus(org.springframework.http.HttpStatus.NOT_FOUND));
 
-        assertThatThrownBy(() -> appClient.getAmigos(PageRequest.of(0, 10)))
+        assertThatThrownBy(() -> appClient.getFriends(PageRequest.of(0, 10)))
                 .isInstanceOf(HttpClientErrorException.class);
 
         server.verify();
