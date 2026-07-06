@@ -51,7 +51,7 @@ class AdventureBffServiceTest {
         when(appClient.getMediaByAdventure(eq(BffStub.ADVENTURE_ID), any()))
                 .thenReturn(new PageResponse<>(List.of(BffStub.aMedia()), 0, 50, 1L, 1));
 
-        var detail = service.getDetail(BffStub.ADVENTURE_ID);
+        var detail = service.getDetail(BffStub.USER_ID, BffStub.ADVENTURE_ID);
 
         assertThat(detail.adventure().id()).isEqualTo(BffStub.ADVENTURE_ID);
         assertThat(detail.paths()).hasSize(1);
@@ -63,7 +63,7 @@ class AdventureBffServiceTest {
     void deveBuscarPorId() {
         when(appClient.getAdventure(BffStub.ADVENTURE_ID)).thenReturn(BffStub.anAdventure());
 
-        AdventureResponse response = service.getById(BffStub.ADVENTURE_ID);
+        AdventureResponse response = service.getById(BffStub.USER_ID, BffStub.ADVENTURE_ID);
 
         assertThat(response.destination()).isEqualTo("Pico da Bandeira");
     }
@@ -76,7 +76,7 @@ class AdventureBffServiceTest {
                 new PageResponse<>(List.of(BffStub.anAdventure()), 0, 10, 1L, 1);
         when(appClient.getAdventuresByUser(BffStub.USER_ID, pageable)).thenReturn(page);
 
-        PageResponse<AdventureResponse> response = service.getByUser(BffStub.USER_ID, pageable);
+        PageResponse<AdventureResponse> response = service.getByUser(BffStub.USER_ID, BffStub.USER_ID, pageable);
 
         assertThat(response.content()).hasSize(1);
         assertThat(response.totalElements()).isEqualTo(1L);

@@ -49,7 +49,7 @@ class MediaBffServiceTest {
                 new PageResponse<>(List.of(BffStub.aMedia()), 0, 10, 1L, 1);
         when(appClient.getMediaByAdventure(BffStub.ADVENTURE_ID, pageable)).thenReturn(page);
 
-        PageResponse<MediaResponse> response = service.getByAdventure(BffStub.ADVENTURE_ID, pageable);
+        PageResponse<MediaResponse> response = service.getByAdventure(BffStub.USER_ID, BffStub.ADVENTURE_ID, pageable);
 
         assertThat(response.content()).hasSize(1);
     }
@@ -62,7 +62,7 @@ class MediaBffServiceTest {
                 new PageResponse<>(List.of(BffStub.aMedia()), 0, 10, 1L, 1);
         when(appClient.getMediaByPath(BffStub.PATH_ID, pageable)).thenReturn(page);
 
-        PageResponse<MediaResponse> response = service.getByPath(BffStub.PATH_ID, pageable);
+        PageResponse<MediaResponse> response = service.getByPath(BffStub.USER_ID, BffStub.PATH_ID, pageable);
 
         assertThat(response.content()).hasSize(1);
     }

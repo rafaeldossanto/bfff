@@ -9,6 +9,7 @@ import com.trisha.bff.model.dto.response.SessionResponse;
 import com.trisha.bff.model.dto.response.TrailDiscoveryResponse;
 import com.trisha.bff.model.dto.response.TrailPointResponse;
 import com.trisha.bff.model.dto.response.TrailPointsResponse;
+import com.trisha.bff.model.dto.response.UserSummaryResponse;
 import com.trisha.bff.stub.BffStub;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -84,7 +85,7 @@ class PathBffServiceTest {
                 new PageResponse<>(List.of(BffStub.aPath()), 0, 10, 1L, 1);
         when(appClient.getPathsByAdventure(BffStub.ADVENTURE_ID, pageable)).thenReturn(page);
 
-        PageResponse<PathResponse> response = service.getByAdventure(BffStub.ADVENTURE_ID, pageable);
+        PageResponse<PathResponse> response = service.getByAdventure(BffStub.USER_ID, BffStub.ADVENTURE_ID, pageable);
 
         assertThat(response.content()).hasSize(1);
     }
@@ -97,7 +98,7 @@ class PathBffServiceTest {
                 new PageResponse<>(List.of(BffStub.aPath()), 0, 10, 1L, 1);
         when(appClient.getPathsByUser(BffStub.USER_ID, pageable)).thenReturn(page);
 
-        PageResponse<PathResponse> response = service.getByUser(BffStub.USER_ID, pageable);
+        PageResponse<PathResponse> response = service.getByUser(BffStub.USER_ID, BffStub.USER_ID, pageable);
 
         assertThat(response.content()).hasSize(1);
     }
@@ -113,12 +114,15 @@ class PathBffServiceTest {
         when(appClient.discoverPaths(anyList()))
                 .thenReturn(List.of(new PathDiscoveryResponse(
                         BffStub.PATH_ID, BffStub.ADVENTURE_ID, BffStub.USER_ID, "Pico da Bandeira", "ROXO")));
+        when(appClient.getUserSummaries(List.of(BffStub.USER_ID)))
+                .thenReturn(List.of(new UserSummaryResponse(BffStub.USER_ID, "Rafael", "rafael#1")));
 
         List<TrailDiscoveryResponse> response = service.discover(-21.0, -42.0, -20.0, -41.0, 200);
 
         assertThat(response).hasSize(1);
         assertThat(response.get(0).pathId()).isEqualTo(BffStub.PATH_ID);
         assertThat(response.get(0).destination()).isEqualTo("Pico da Bandeira");
+        assertThat(response.get(0).userName()).isEqualTo("Rafael");
         assertThat(response.get(0).points()).isEqualTo(points);
     }
 

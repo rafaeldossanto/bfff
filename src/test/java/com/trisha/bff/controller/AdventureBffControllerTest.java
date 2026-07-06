@@ -72,7 +72,7 @@ class AdventureBffControllerTest {
     @Test
     @DisplayName("GET /bff/aventuras/{id} retorna aventura existente")
     void shouldGetAdventureById() throws Exception {
-        when(adventureService.getById(ADVENTURE_ID)).thenReturn(responseStub());
+        when(adventureService.getById(USER_ID, ADVENTURE_ID)).thenReturn(responseStub());
 
         mockMvc.perform(get("/bff/aventuras/{id}", ADVENTURE_ID)
                         .with(jwt().jwt(j -> j.subject(USER_ID).claim("codigoUsuario", "code-1"))))
@@ -83,7 +83,7 @@ class AdventureBffControllerTest {
     @Test
     @DisplayName("GET /bff/aventuras/{id} retorna 404 quando aventura nao encontrada no downstream")
     void shouldReturn404WhenNotFoundDownstream() throws Exception {
-        when(adventureService.getById("inexistente"))
+        when(adventureService.getById(USER_ID, "inexistente"))
                 .thenThrow(new org.springframework.web.client.HttpClientErrorException(
                         org.springframework.http.HttpStatus.NOT_FOUND));
 
@@ -95,7 +95,7 @@ class AdventureBffControllerTest {
     @Test
     @DisplayName("GET /bff/aventuras/{id} retorna 503 quando servico APP indisponivel")
     void shouldReturn503WhenServiceUnavailable() throws Exception {
-        when(adventureService.getById(ADVENTURE_ID))
+        when(adventureService.getById(USER_ID, ADVENTURE_ID))
                 .thenThrow(new ResourceAccessException("Connection refused"));
 
         mockMvc.perform(get("/bff/aventuras/{id}", ADVENTURE_ID)
