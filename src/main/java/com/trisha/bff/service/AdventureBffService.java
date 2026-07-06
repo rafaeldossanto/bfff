@@ -5,9 +5,11 @@ import com.trisha.bff.model.dto.request.AdventureRequest;
 import com.trisha.bff.model.dto.request.MoveRegionRequest;
 import com.trisha.bff.model.dto.response.AdventureDetailResponse;
 import com.trisha.bff.model.dto.response.AdventureResponse;
+import com.trisha.bff.model.dto.response.FeedAdventureResponse;
 import com.trisha.bff.model.dto.response.PathResponse;
 import com.trisha.bff.model.dto.response.MediaResponse;
 import com.trisha.bff.model.dto.response.PageResponse;
+import com.trisha.bff.model.dto.response.UserSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -18,6 +20,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Orquestra operacoes de aventura sobre o servico APP.
@@ -27,6 +32,11 @@ import java.util.List;
  * invalidam ambos, pois alteram tanto a aventura quanto as listas que a
  * contem — invalidar a lista inteira do usuario e mais simples e seguro do
  * que tentar atualizar entradas individuais.
+ *
+ * As chaves das leituras incluem o observador: o APP filtra por visibilidade,
+ * entao cachear so por id vazaria dado de um usuario autorizado para outro.
+ * Por isso as escritas invalidam com allEntries (nao da para prever as chaves
+ * por-usuario existentes).
  */
 @Service
 @RequiredArgsConstructor
@@ -48,9 +58,45 @@ public class AdventureBffService {
         return appClient.createAdventure(request);
     }
 
-    @Cacheable(cacheNames = "aventura", key = "#id")
-    public AdventureResponse getById(String id) {
+    @Cacheable(cacheNames = "aventura", key = "#observerId + '-' + #id")
+    public AdventureResponse getById(String observerId, String id) {
         return appClient.getAdventure(id);
+    }
+
+    /**
+     * Feed do app: aventuras do usuario + as visiveis de quem ele segue (a
+     * selecao e do APP, pelo Bearer), enriquecidas com nome/codigo do autor.
+     * Sem cache: o resultado e por usuario e o feed pede frescor.
+     */
+    public PageResponse<FeedAdventureResponse> getFeed(Pageable pageable) {
+        PageResponse<AdventureResponse> page = appClient.getFeed(pageable);
+        if (page.content().isEmpty()) {
+            return new PageResponse<>(List.of(), page.number(), page.size(),
+                    page.totalElements(), page.totalPages());
+        }
+
+        Map<String, UserSummaryResponse> users = appClient
+                .getUserSummaries(page.content().stream().map(AdventureResponse::userId).distinct().toList())
+                .stream()
+                .collect(Collectors.toMap(UserSummaryResponse::id, Function.identity()));
+
+        List<FeedAdventureResponse> items = page.content().stream()
+                .map(adventure -> {
+                    UserSummaryResponse user = users.get(adventure.userId());
+                    return new FeedAdventureResponse(
+                            adventure.id(),
+                            adventure.userId(),
+                            user == null ? null : user.name(),
+                            user == null ? null : user.userCode(),
+                            adventure.regionId(),
+                            adventure.destination(),
+                            adventure.status(),
+                            adventure.visibility(),
+                            adventure.createdAt());
+                })
+                .toList();
+
+        return new PageResponse<>(items, page.number(), page.size(), page.totalElements(), page.totalPages());
     }
 
     /**
@@ -58,8 +104,8 @@ public class AdventureBffService {
      * resposta. O app faz UMA chamada em vez de tres sequenciais. Tudo vem do
      * APP (que concentra esses dados), entao continua sendo uma agregacao barata.
      */
-    @Cacheable(cacheNames = "aventura-detalhe", key = "#id")
-    public AdventureDetailResponse getDetail(String id) {
+    @Cacheable(cacheNames = "aventura-detalhe", key = "#observerId + '-' + #id")
+    public AdventureDetailResponse getDetail(String observerId, String id) {
         log.info("BFF: montando tela de aventura {}", id);
         AdventureResponse adventure = appClient.getAdventure(id);
         List<PathResponse> paths = appClient.getPathsByAdventure(id, FIRST_DETAIL_PAGE).content();
@@ -68,14 +114,14 @@ public class AdventureBffService {
     }
 
     @Cacheable(cacheNames = "aventuras-usuario",
-            key = "#userId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
-    public PageResponse<AdventureResponse> getByUser(String userId, Pageable pageable) {
+            key = "#observerId + '-' + #userId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    public PageResponse<AdventureResponse> getByUser(String observerId, String userId, Pageable pageable) {
         return appClient.getAdventuresByUser(userId, pageable);
     }
 
     @Caching(evict = {
-            @CacheEvict(cacheNames = "aventura", key = "#id"),
-            @CacheEvict(cacheNames = "aventura-detalhe", key = "#id"),
+            @CacheEvict(cacheNames = "aventura", allEntries = true),
+            @CacheEvict(cacheNames = "aventura-detalhe", allEntries = true),
             @CacheEvict(cacheNames = "aventuras-usuario", allEntries = true)
     })
     public AdventureResponse updateStatus(String id, String status) {
@@ -84,8 +130,8 @@ public class AdventureBffService {
     }
 
     @Caching(evict = {
-            @CacheEvict(cacheNames = "aventura", key = "#id"),
-            @CacheEvict(cacheNames = "aventura-detalhe", key = "#id"),
+            @CacheEvict(cacheNames = "aventura", allEntries = true),
+            @CacheEvict(cacheNames = "aventura-detalhe", allEntries = true),
             @CacheEvict(cacheNames = "aventuras-usuario", allEntries = true)
     })
     public AdventureResponse moveRegion(String id, MoveRegionRequest request) {
@@ -93,15 +139,15 @@ public class AdventureBffService {
         return appClient.moveAdventureRegion(id, request);
     }
 
-    @CacheEvict(cacheNames = "aventura", key = "#adventureId")
+    @CacheEvict(cacheNames = "aventura", allEntries = true)
     public void addParticipant(String adventureId, String userId) {
         log.info("BFF: adicionando participante {} a aventura {}", userId, adventureId);
         appClient.addParticipant(adventureId, userId);
     }
 
     @Caching(evict = {
-            @CacheEvict(cacheNames = "aventura", key = "#id"),
-            @CacheEvict(cacheNames = "aventura-detalhe", key = "#id"),
+            @CacheEvict(cacheNames = "aventura", allEntries = true),
+            @CacheEvict(cacheNames = "aventura-detalhe", allEntries = true),
             @CacheEvict(cacheNames = "aventuras-usuario", allEntries = true)
     })
     public void delete(String id) {

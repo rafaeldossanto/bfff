@@ -14,6 +14,7 @@ import com.trisha.bff.model.dto.response.FriendshipResponse;
 import com.trisha.bff.model.dto.response.AdventureResponse;
 import com.trisha.bff.model.dto.response.CountersResponse;
 import com.trisha.bff.model.dto.response.FollowStatusResponse;
+import com.trisha.bff.model.dto.response.PathDiscoveryResponse;
 import com.trisha.bff.model.dto.response.PathResponse;
 import com.trisha.bff.model.dto.response.EvidenceResponse;
 import com.trisha.bff.model.dto.response.MediaResponse;
@@ -21,6 +22,7 @@ import com.trisha.bff.model.dto.response.PageResponse;
 import com.trisha.bff.model.dto.response.PointOfInterestResponse;
 import com.trisha.bff.model.dto.response.RegionResponse;
 import com.trisha.bff.model.dto.response.PublicUserResponse;
+import com.trisha.bff.model.dto.response.UserSummaryResponse;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +42,8 @@ public class AppClient {
 
     private static final ParameterizedTypeReference<PageResponse<AdventureResponse>> PAGE_ADVENTURE = new ParameterizedTypeReference<>() {};
     private static final ParameterizedTypeReference<PageResponse<PathResponse>> PAGE_PATH = new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<List<PathDiscoveryResponse>> LIST_PATH_DISCOVERY = new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<List<UserSummaryResponse>> LIST_USER_SUMMARY = new ParameterizedTypeReference<>() {};
     private static final ParameterizedTypeReference<PageResponse<PointOfInterestResponse>> PAGE_POINT = new ParameterizedTypeReference<>() {};
     private static final ParameterizedTypeReference<PageResponse<MediaResponse>> PAGE_MEDIA = new ParameterizedTypeReference<>() {};
     private static final ParameterizedTypeReference<PageResponse<FriendshipResponse>> PAGE_FRIENDSHIP = new ParameterizedTypeReference<>() {};
@@ -270,6 +274,62 @@ public class AppClient {
     public PageResponse<PathResponse> fallbackGetPathsByUser(String userId, Pageable pageable, Throwable t) {
         log.warn("Circuit breaker: falha ao listar caminhos do usuario {} - {}", userId, t.getMessage());
         return PageResponse.empty();
+    }
+
+    /** Checagem de acesso a um caminho — falha FECHADA (erro nunca vira "pode ver"). */
+    @CircuitBreaker(name = "app", fallbackMethod = "fallbackCanViewPath")
+    @Retry(name = "app")
+    public boolean canViewPath(String pathId) {
+        return Boolean.TRUE.equals(appRestClient.get().uri("/caminho/{id}/acesso", pathId)
+                .retrieve().body(Boolean.class));
+    }
+
+    public boolean fallbackCanViewPath(String pathId, Throwable t) {
+        log.error("Circuit breaker: falha na checagem de acesso do caminho {} - {}", pathId, t.getMessage());
+        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+    }
+
+    @CircuitBreaker(name = "app", fallbackMethod = "fallbackGetUserSummaries")
+    @Retry(name = "app")
+    public List<UserSummaryResponse> getUserSummaries(List<String> ids) {
+        return appRestClient.get()
+                .uri(b -> b.path("/usuario/resumo")
+                        .queryParam("ids", String.join(",", ids)).build())
+                .retrieve().body(LIST_USER_SUMMARY);
+    }
+
+    public List<UserSummaryResponse> fallbackGetUserSummaries(List<String> ids, Throwable t) {
+        log.warn("Circuit breaker: falha ao resolver nomes de usuarios - {}", t.getMessage());
+        return Collections.emptyList();
+    }
+
+    @CircuitBreaker(name = "app", fallbackMethod = "fallbackGetFeed")
+    @Retry(name = "app")
+    public PageResponse<AdventureResponse> getFeed(Pageable pageable) {
+        return appRestClient.get()
+                .uri(b -> b.path("/aventura/feed")
+                        .queryParam("page", pageable.getPageNumber())
+                        .queryParam("size", pageable.getPageSize()).build())
+                .retrieve().body(PAGE_ADVENTURE);
+    }
+
+    public PageResponse<AdventureResponse> fallbackGetFeed(Pageable pageable, Throwable t) {
+        log.warn("Circuit breaker: falha ao montar o feed - {}", t.getMessage());
+        return PageResponse.empty();
+    }
+
+    @CircuitBreaker(name = "app", fallbackMethod = "fallbackDiscoverPaths")
+    @Retry(name = "app")
+    public List<PathDiscoveryResponse> discoverPaths(List<String> ids) {
+        return appRestClient.get()
+                .uri(b -> b.path("/caminho/descobrir")
+                        .queryParam("ids", String.join(",", ids)).build())
+                .retrieve().body(LIST_PATH_DISCOVERY);
+    }
+
+    public List<PathDiscoveryResponse> fallbackDiscoverPaths(List<String> ids, Throwable t) {
+        log.warn("Circuit breaker: falha ao descobrir caminhos - {}", t.getMessage());
+        return Collections.emptyList();
     }
 
     @CircuitBreaker(name = "app", fallbackMethod = "fallbackCreatePoint")

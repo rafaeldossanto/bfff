@@ -1,5 +1,6 @@
 package com.trisha.bff.controller;
 
+import com.trisha.bff.auth.AuthenticatedUser;
 import com.trisha.bff.model.dto.request.MediaRequest;
 import com.trisha.bff.model.dto.response.MediaResponse;
 import com.trisha.bff.model.dto.response.PageResponse;
@@ -28,13 +29,17 @@ public class MediaController {
     }
 
     @GetMapping("/aventura/{aventuraId}")
-    public PageResponse<MediaResponse> getByAdventure(@PathVariable("aventuraId") String adventureId, Pageable pageable) {
-        return mediaService.getByAdventure(adventureId, pageable);
+    public PageResponse<MediaResponse> getByAdventure(AuthenticatedUser user,
+                                                      @PathVariable("aventuraId") String adventureId,
+                                                      Pageable pageable) {
+        return mediaService.getByAdventure(user.id(), adventureId, pageable);
     }
 
     @GetMapping("/caminho/{caminhoId}")
-    public PageResponse<MediaResponse> getByPath(@PathVariable("caminhoId") String pathId, Pageable pageable) {
-        return mediaService.getByPath(pathId, pageable);
+    public PageResponse<MediaResponse> getByPath(AuthenticatedUser user,
+                                                 @PathVariable("caminhoId") String pathId,
+                                                 Pageable pageable) {
+        return mediaService.getByPath(user.id(), pathId, pageable);
     }
 
     @DeleteMapping("/{id}")

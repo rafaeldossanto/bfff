@@ -4,7 +4,9 @@ import com.trisha.bff.exception.ServiceUnavailableException;
 import com.trisha.bff.model.dto.request.GpsPointRequest;
 import com.trisha.bff.model.dto.request.SessionRequest;
 import com.trisha.bff.model.dto.response.GpsPointResponse;
+import com.trisha.bff.model.dto.response.LiveSessionResponse;
 import com.trisha.bff.model.dto.response.SessionResponse;
+import com.trisha.bff.model.dto.response.TrailPointsResponse;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,8 @@ import java.util.List;
 public class LocationClient {
 
     private static final ParameterizedTypeReference<List<GpsPointResponse>> LIST_POINT = new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<List<TrailPointsResponse>> LIST_TRAIL = new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<List<LiveSessionResponse>> LIST_LIVE = new ParameterizedTypeReference<>() {};
 
     private final RestClient localizacaoRestClient;
 
@@ -77,6 +81,46 @@ public class LocationClient {
         throw new ServiceUnavailableException("Servico de localizacao temporariamente indisponivel.");
     }
 
+    @CircuitBreaker(name = "localizacao", fallbackMethod = "fallbackUpdateVisibility")
+    @Retry(name = "localizacao")
+    public SessionResponse updateSessionVisibility(String id, String visibility) {
+        return localizacaoRestClient.patch()
+                .uri(b -> b.path("/localizacao/sessao/{id}/visibilidade")
+                        .queryParam("visibilidade", visibility).build(id))
+                .retrieve().body(SessionResponse.class);
+    }
+
+    public SessionResponse fallbackUpdateVisibility(String id, String visibility, Throwable t) {
+        log.error("Circuit breaker: falha ao alterar visibilidade da sessao {} - {}", id, t.getMessage());
+        throw new ServiceUnavailableException("Servico de localizacao temporariamente indisponivel.");
+    }
+
+    @CircuitBreaker(name = "localizacao", fallbackMethod = "fallbackGetSession")
+    @Retry(name = "localizacao")
+    public SessionResponse getSession(String id) {
+        return localizacaoRestClient.get().uri("/localizacao/sessao/{id}", id)
+                .retrieve().body(SessionResponse.class);
+    }
+
+    public SessionResponse fallbackGetSession(String id, Throwable t) {
+        log.error("Circuit breaker: falha ao buscar sessao {} - {}", id, t.getMessage());
+        throw new ServiceUnavailableException("Servico de localizacao temporariamente indisponivel.");
+    }
+
+    /** Checagem de acompanhamento ao vivo — falha FECHADA (erro nunca vira "pode ver"). */
+    @CircuitBreaker(name = "localizacao", fallbackMethod = "fallbackCanWatchSession")
+    @Retry(name = "localizacao")
+    public boolean canWatchSession(String id) {
+        return Boolean.TRUE.equals(localizacaoRestClient.get()
+                .uri("/localizacao/sessao/{id}/acesso", id)
+                .retrieve().body(Boolean.class));
+    }
+
+    public boolean fallbackCanWatchSession(String id, Throwable t) {
+        log.error("Circuit breaker: falha na checagem de acesso da sessao {} - {}", id, t.getMessage());
+        throw new ServiceUnavailableException("Servico de localizacao temporariamente indisponivel.");
+    }
+
     @CircuitBreaker(name = "localizacao", fallbackMethod = "fallbackGetSessionByPath")
     @Retry(name = "localizacao")
     public SessionResponse getSessionByPath(String pathId) {
@@ -110,6 +154,38 @@ public class LocationClient {
 
     public List<GpsPointResponse> fallbackGetPointsByPath(String pathId, Throwable t) {
         log.warn("Circuit breaker: falha ao listar pontos do caminho {} - {}", pathId, t.getMessage());
+        return Collections.emptyList();
+    }
+
+    @CircuitBreaker(name = "localizacao", fallbackMethod = "fallbackGetLiveSessions")
+    @Retry(name = "localizacao")
+    public List<LiveSessionResponse> getLiveSessions() {
+        return localizacaoRestClient.get().uri("/localizacao/sessoes/ao-vivo")
+                .retrieve().body(LIST_LIVE);
+    }
+
+    public List<LiveSessionResponse> fallbackGetLiveSessions(Throwable t) {
+        log.warn("Circuit breaker: falha ao listar sessoes ao vivo - {}", t.getMessage());
+        return Collections.emptyList();
+    }
+
+    @CircuitBreaker(name = "localizacao", fallbackMethod = "fallbackGetPointsInBbox")
+    @Retry(name = "localizacao")
+    public List<TrailPointsResponse> getPointsInBbox(double minLat, double minLng, double maxLat, double maxLng,
+                                                     int maxPointsPerPath) {
+        return localizacaoRestClient.get()
+                .uri(b -> b.path("/localizacao/pontos/bbox")
+                        .queryParam("minLat", minLat)
+                        .queryParam("minLng", minLng)
+                        .queryParam("maxLat", maxLat)
+                        .queryParam("maxLng", maxLng)
+                        .queryParam("limitePorCaminho", maxPointsPerPath).build())
+                .retrieve().body(LIST_TRAIL);
+    }
+
+    public List<TrailPointsResponse> fallbackGetPointsInBbox(double minLat, double minLng, double maxLat,
+                                                             double maxLng, int maxPointsPerPath, Throwable t) {
+        log.warn("Circuit breaker: falha ao buscar trilhas na bbox - {}", t.getMessage());
         return Collections.emptyList();
     }
 }

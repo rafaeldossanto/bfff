@@ -33,15 +33,17 @@ public class MediaBffService {
         return appClient.saveMedia(request);
     }
 
+    // Chave inclui o observador: o APP nega por visibilidade da aventura, e um
+    // cache so por id serviria a resposta de um usuario autorizado a outro nao.
     @Cacheable(cacheNames = "midias-aventura",
-            key = "#adventureId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
-    public PageResponse<MediaResponse> getByAdventure(String adventureId, Pageable pageable) {
+            key = "#observerId + '-' + #adventureId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    public PageResponse<MediaResponse> getByAdventure(String observerId, String adventureId, Pageable pageable) {
         return appClient.getMediaByAdventure(adventureId, pageable);
     }
 
     @Cacheable(cacheNames = "midias-caminho",
-            key = "#pathId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
-    public PageResponse<MediaResponse> getByPath(String pathId, Pageable pageable) {
+            key = "#observerId + '-' + #pathId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    public PageResponse<MediaResponse> getByPath(String observerId, String pathId, Pageable pageable) {
         return appClient.getMediaByPath(pathId, pageable);
     }
 

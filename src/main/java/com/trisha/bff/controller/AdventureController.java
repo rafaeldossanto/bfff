@@ -1,9 +1,11 @@
 package com.trisha.bff.controller;
 
+import com.trisha.bff.auth.AuthenticatedUser;
 import com.trisha.bff.model.dto.request.AdventureRequest;
 import com.trisha.bff.model.dto.request.MoveRegionRequest;
 import com.trisha.bff.model.dto.response.AdventureDetailResponse;
 import com.trisha.bff.model.dto.response.AdventureResponse;
+import com.trisha.bff.model.dto.response.FeedAdventureResponse;
 import com.trisha.bff.model.dto.response.PageResponse;
 import com.trisha.bff.service.AdventureBffService;
 import jakarta.validation.Valid;
@@ -31,19 +33,26 @@ public class AdventureController {
         return adventureService.create(request);
     }
 
+    /** Feed do app: minhas aventuras + as visiveis de quem eu sigo, com autor resolvido. */
+    @GetMapping("/feed")
+    public PageResponse<FeedAdventureResponse> getFeed(Pageable pageable) {
+        return adventureService.getFeed(pageable);
+    }
+
     @GetMapping("/{id}")
-    public AdventureResponse getById(@PathVariable String id) {
-        return adventureService.getById(id);
+    public AdventureResponse getById(AuthenticatedUser user, @PathVariable String id) {
+        return adventureService.getById(user.id(), id);
     }
 
     @GetMapping("/{id}/detalhe")
-    public AdventureDetailResponse getDetail(@PathVariable String id) {
-        return adventureService.getDetail(id);
+    public AdventureDetailResponse getDetail(AuthenticatedUser user, @PathVariable String id) {
+        return adventureService.getDetail(user.id(), id);
     }
 
     @GetMapping("/usuario/{usuarioId}")
-    public PageResponse<AdventureResponse> getByUser(@PathVariable("usuarioId") String userId, Pageable pageable) {
-        return adventureService.getByUser(userId, pageable);
+    public PageResponse<AdventureResponse> getByUser(AuthenticatedUser user,
+                                                     @PathVariable("usuarioId") String userId, Pageable pageable) {
+        return adventureService.getByUser(user.id(), userId, pageable);
     }
 
     @PatchMapping("/{id}/status")

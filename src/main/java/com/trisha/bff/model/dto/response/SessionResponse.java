@@ -9,6 +9,7 @@ public record SessionResponse(
         @JsonProperty("caminhoId") String pathId,
         @JsonProperty("usuarioId") String userId,
         String status,
+        @JsonProperty("visibilidade") String visibility,
         @JsonProperty("terminoAutomatico") Boolean autoFinish,
         @JsonProperty("distanciaTerminoMetros") Double finishDistanceMeters,
         @JsonProperty("distanciaTotalKm") Double totalDistanceKm,

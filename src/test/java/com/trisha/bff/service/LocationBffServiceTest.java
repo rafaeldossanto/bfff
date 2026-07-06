@@ -2,6 +2,7 @@ package com.trisha.bff.service;
 
 import com.trisha.bff.client.LocationClient;
 import com.trisha.bff.model.dto.response.GpsPointResponse;
+import com.trisha.bff.model.dto.response.LiveSessionResponse;
 import com.trisha.bff.model.dto.response.SessionResponse;
 import com.trisha.bff.stub.BffStub;
 import org.junit.jupiter.api.DisplayName;
@@ -71,6 +72,18 @@ class LocationBffServiceTest {
     }
 
     @Test
+    @DisplayName("updateVisibility deve delegar ao LocationClient")
+    void deveAlterarVisibilidade() {
+        when(locationClient.updateSessionVisibility(BffStub.SESSION_ID, "SEGUIDORES"))
+                .thenReturn(BffStub.aSession());
+
+        SessionResponse response = service.updateVisibility(BffStub.SESSION_ID, "SEGUIDORES");
+
+        assertThat(response.id()).isEqualTo(BffStub.SESSION_ID);
+        verify(locationClient).updateSessionVisibility(BffStub.SESSION_ID, "SEGUIDORES");
+    }
+
+    @Test
     @DisplayName("getSessionByPath deve delegar ao LocationClient")
     void deveBuscarSessaoPorCaminho() {
         when(locationClient.getSessionByPath(BffStub.PATH_ID)).thenReturn(BffStub.aSession());
@@ -78,6 +91,19 @@ class LocationBffServiceTest {
         SessionResponse response = service.getSessionByPath(BffStub.PATH_ID);
 
         assertThat(response.pathId()).isEqualTo(BffStub.PATH_ID);
+    }
+
+    @Test
+    @DisplayName("getLiveSessions deve delegar ao LocationClient")
+    void deveListarSessoesAoVivo() {
+        LiveSessionResponse live = new LiveSessionResponse(
+                BffStub.SESSION_ID, BffStub.PATH_ID, "outro-usuario", "PUBLICO", null, -20.43, -41.79);
+        when(locationClient.getLiveSessions()).thenReturn(List.of(live));
+
+        List<LiveSessionResponse> response = service.getLiveSessions();
+
+        assertThat(response).hasSize(1);
+        assertThat(response.get(0).sessionId()).isEqualTo(BffStub.SESSION_ID);
     }
 
     @Test

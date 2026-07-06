@@ -126,12 +126,12 @@ public final class BffStub {
     // ---------------------------- Localizacao ---------------------------
 
     public static SessionResponse aSession() {
-        return new SessionResponse(SESSION_ID, PATH_ID, USER_ID, "EM_ANDAMENTO",
+        return new SessionResponse(SESSION_ID, PATH_ID, USER_ID, "EM_ANDAMENTO", "PRIVADO",
                 false, 5.0, null, LocalDateTime.now(), null);
     }
 
     public static SessionRequest aSessionRequest() {
-        return new SessionRequest(PATH_ID, USER_ID, true, 10.0);
+        return new SessionRequest(PATH_ID, USER_ID, true, 10.0, "AMIGOS");
     }
 
     public static GpsPointResponse aGpsPoint() {
