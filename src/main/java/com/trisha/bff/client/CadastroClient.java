@@ -1,7 +1,9 @@
 package com.trisha.bff.client;
 
+import com.trisha.bff.exception.ClientFallbacks;
 import com.trisha.bff.exception.ServiceUnavailableException;
 import com.trisha.bff.model.dto.request.DevLoginRequest;
+import com.trisha.bff.model.dto.request.LoginRequest;
 import com.trisha.bff.model.dto.request.SocialLoginRequest;
 import com.trisha.bff.model.dto.request.UserCreateRequest;
 import com.trisha.bff.model.dto.request.UserUpdateRequest;
@@ -37,7 +39,7 @@ public class CadastroClient {
 
     public UserResponse fallbackCreate(UserCreateRequest request, Throwable t) {
         log.error("Circuit breaker: falha ao criar usuario - {}", t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     @CircuitBreaker(name = "cadastro", fallbackMethod = "fallbackUpdate")
@@ -53,7 +55,7 @@ public class CadastroClient {
 
     public UserResponse fallbackUpdate(String id, UserUpdateRequest request, Throwable t) {
         log.error("Circuit breaker: falha ao atualizar usuario {} - {}", id, t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     @CircuitBreaker(name = "cadastro", fallbackMethod = "fallbackGetById")
@@ -68,7 +70,7 @@ public class CadastroClient {
 
     public UserResponse fallbackGetById(String id, Throwable t) {
         log.error("Circuit breaker: falha ao buscar usuario {} - {}", id, t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     public void delete(String id) {
@@ -91,7 +93,22 @@ public class CadastroClient {
 
     public String fallbackConfirmEmail(String token, Throwable t) {
         log.error("Circuit breaker: falha ao confirmar email - {}", t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
+    }
+
+    @CircuitBreaker(name = "cadastro", fallbackMethod = "fallbackResendEmail")
+    @Retry(name = "cadastro")
+    public String resendEmail(String userId) {
+        log.debug("CADASTRO: reenviando email de confirmacao do usuario {}", userId);
+        return cadastroRestClient.post()
+                .uri(uriBuilder -> uriBuilder.path("/auth/reenviar-email").queryParam("usuarioId", userId).build())
+                .retrieve()
+                .body(String.class);
+    }
+
+    public String fallbackResendEmail(String userId, Throwable t) {
+        log.error("Circuit breaker: falha ao reenviar email do usuario {} - {}", userId, t.getMessage());
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     @CircuitBreaker(name = "cadastro", fallbackMethod = "fallbackAcceptTerms")
@@ -106,7 +123,7 @@ public class CadastroClient {
 
     public String fallbackAcceptTerms(String userId, Throwable t) {
         log.error("Circuit breaker: falha ao aceitar termos do usuario {} - {}", userId, t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     @CircuitBreaker(name = "cadastro", fallbackMethod = "fallbackSocialLogin")
@@ -122,7 +139,23 @@ public class CadastroClient {
 
     public AuthenticationResponse fallbackSocialLogin(SocialLoginRequest request, Throwable t) {
         log.error("Circuit breaker: falha ao realizar login social - {}", t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
+    }
+
+    @CircuitBreaker(name = "cadastro", fallbackMethod = "fallbackLogin")
+    @Retry(name = "cadastro")
+    public AuthenticationResponse login(LoginRequest request) {
+        log.debug("CADASTRO: login por senha {}", request.email());
+        return cadastroRestClient.post()
+                .uri("/auth/login")
+                .body(request)
+                .retrieve()
+                .body(AuthenticationResponse.class);
+    }
+
+    public AuthenticationResponse fallbackLogin(LoginRequest request, Throwable t) {
+        log.error("Circuit breaker: falha ao realizar login - {}", t.getMessage());
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     @CircuitBreaker(name = "cadastro", fallbackMethod = "fallbackDevLogin")
@@ -138,6 +171,6 @@ public class CadastroClient {
 
     public AuthenticationResponse fallbackDevLogin(DevLoginRequest request, Throwable t) {
         log.error("Circuit breaker: falha ao realizar dev login - {}", t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 }

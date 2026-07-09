@@ -5,6 +5,7 @@ import com.trisha.bff.client.CadastroClient;
 import com.trisha.bff.model.dto.response.AuthenticationResponse;
 import com.trisha.bff.model.dto.response.PublicUserResponse;
 import com.trisha.bff.model.dto.response.UserResponse;
+import com.trisha.bff.model.dto.response.UserSummaryResponse;
 import com.trisha.bff.stub.BffStub;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -84,6 +85,17 @@ class UserBffServiceTest {
     }
 
     @Test
+    @DisplayName("resendEmail deve delegar ao CadastroClient")
+    void deveReenviarEmail() {
+        when(cadastroClient.resendEmail(BffStub.USER_ID)).thenReturn("Email reenviado com sucesso");
+
+        String result = service.resendEmail(BffStub.USER_ID);
+
+        assertThat(result).isEqualTo("Email reenviado com sucesso");
+        verify(cadastroClient).resendEmail(BffStub.USER_ID);
+    }
+
+    @Test
     @DisplayName("socialLogin deve delegar ao CadastroClient")
     void deveFazerLoginSocial() {
         var request = new com.trisha.bff.model.dto.request.SocialLoginRequest("GOOGLE", "token-jwt");
@@ -94,6 +106,19 @@ class UserBffServiceTest {
         assertThat(response.user().id()).isEqualTo(BffStub.USER_ID);
         assertThat(response.accessToken()).isEqualTo("jwt-token");
         verify(cadastroClient).socialLogin(request);
+    }
+
+    @Test
+    @DisplayName("login deve delegar ao CadastroClient")
+    void deveFazerLoginPorSenha() {
+        var request = new com.trisha.bff.model.dto.request.LoginRequest("rafael@trilha.com", "senha123");
+        when(cadastroClient.login(request)).thenReturn(BffStub.anAuthentication());
+
+        AuthenticationResponse response = service.login(request);
+
+        assertThat(response.user().id()).isEqualTo(BffStub.USER_ID);
+        assertThat(response.accessToken()).isEqualTo("jwt-token");
+        verify(cadastroClient).login(request);
     }
 
     @Test
@@ -117,5 +142,18 @@ class UserBffServiceTest {
         List<PublicUserResponse> response = service.autocomplete("raf");
 
         assertThat(response).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("findSummaryByCode deve delegar ao AppClient")
+    void deveBuscarResumoPorCodigo() {
+        when(appClient.findUserSummaryByCode("rafael#1"))
+                .thenReturn(new UserSummaryResponse(BffStub.USER_ID, "Rafael", "rafael#1"));
+
+        UserSummaryResponse response = service.findSummaryByCode("rafael#1");
+
+        assertThat(response.id()).isEqualTo(BffStub.USER_ID);
+        assertThat(response.userCode()).isEqualTo("rafael#1");
+        verify(appClient).findUserSummaryByCode("rafael#1");
     }
 }

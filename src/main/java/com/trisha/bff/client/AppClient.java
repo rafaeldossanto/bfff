@@ -1,5 +1,6 @@
 package com.trisha.bff.client;
 
+import com.trisha.bff.exception.ClientFallbacks;
 import com.trisha.bff.exception.ServiceUnavailableException;
 import com.trisha.bff.model.dto.request.FriendshipRequest;
 import com.trisha.bff.model.dto.request.AdventureRequest;
@@ -66,7 +67,7 @@ public class AppClient {
 
     public RegionResponse fallbackCreateRegion(RegionRequest request, Throwable t) {
         log.error("Circuit breaker: falha ao criar regiao - {}", t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     @CircuitBreaker(name = "app", fallbackMethod = "fallbackGetMyRegions")
@@ -108,7 +109,7 @@ public class AppClient {
 
     public RegionResponse fallbackGetRegion(String id, Throwable t) {
         log.error("Circuit breaker: falha ao buscar regiao {} - {}", id, t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     @CircuitBreaker(name = "app", fallbackMethod = "fallbackGetAdventuresByRegion")
@@ -135,7 +136,7 @@ public class AppClient {
 
     public RegionResponse fallbackUpdateRegion(String id, RegionRequest request, Throwable t) {
         log.error("Circuit breaker: falha ao atualizar regiao {} - {}", id, t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     public void deleteRegion(String id) {
@@ -152,7 +153,7 @@ public class AppClient {
 
     public AdventureResponse fallbackCreateAdventure(AdventureRequest request, Throwable t) {
         log.error("Circuit breaker: falha ao criar aventura - {}", t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     @CircuitBreaker(name = "app", fallbackMethod = "fallbackMoveAdventureRegion")
@@ -164,7 +165,7 @@ public class AppClient {
 
     public AdventureResponse fallbackMoveAdventureRegion(String id, MoveRegionRequest request, Throwable t) {
         log.error("Circuit breaker: falha ao mover aventura {} - {}", id, t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     @CircuitBreaker(name = "app", fallbackMethod = "fallbackGetAdventure")
@@ -176,7 +177,7 @@ public class AppClient {
 
     public AdventureResponse fallbackGetAdventure(String id, Throwable t) {
         log.error("Circuit breaker: falha ao buscar aventura {} - {}", id, t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     @CircuitBreaker(name = "app", fallbackMethod = "fallbackGetAdventuresByUser")
@@ -205,7 +206,7 @@ public class AppClient {
 
     public AdventureResponse fallbackUpdateAdventureStatus(String id, String status, Throwable t) {
         log.error("Circuit breaker: falha ao atualizar status da aventura {} - {}", id, t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     public void addParticipant(String adventureId, String userId) {
@@ -228,7 +229,7 @@ public class AppClient {
 
     public PathResponse fallbackStartPath(PathRequest request, Throwable t) {
         log.error("Circuit breaker: falha ao iniciar caminho - {}", t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     @CircuitBreaker(name = "app", fallbackMethod = "fallbackFinishPath")
@@ -241,7 +242,7 @@ public class AppClient {
 
     public PathResponse fallbackFinishPath(String id, Double totalDistanceKm, Throwable t) {
         log.error("Circuit breaker: falha ao finalizar caminho {} - {}", id, t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     @CircuitBreaker(name = "app", fallbackMethod = "fallbackGetPathsByAdventure")
@@ -286,7 +287,7 @@ public class AppClient {
 
     public boolean fallbackCanViewPath(String pathId, Throwable t) {
         log.error("Circuit breaker: falha na checagem de acesso do caminho {} - {}", pathId, t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     @CircuitBreaker(name = "app", fallbackMethod = "fallbackGetUserSummaries")
@@ -341,7 +342,7 @@ public class AppClient {
 
     public PointOfInterestResponse fallbackCreatePoint(PointOfInterestRequest request, Throwable t) {
         log.error("Circuit breaker: falha ao criar ponto de interesse - {}", t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     @CircuitBreaker(name = "app", fallbackMethod = "fallbackGetPoint")
@@ -353,7 +354,7 @@ public class AppClient {
 
     public PointOfInterestResponse fallbackGetPoint(String id, Throwable t) {
         log.error("Circuit breaker: falha ao buscar ponto {} - {}", id, t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     @CircuitBreaker(name = "app", fallbackMethod = "fallbackGetPointsByPath")
@@ -381,7 +382,7 @@ public class AppClient {
 
     public EvidenceResponse fallbackAddEvidence(EvidenceRequest request, Throwable t) {
         log.error("Circuit breaker: falha ao adicionar evidencia - {}", t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     public MediaResponse saveMedia(MediaRequest request) {
@@ -435,7 +436,7 @@ public class AppClient {
 
     public FriendshipResponse fallbackRequestFriendship(FriendshipRequest request, Throwable t) {
         log.error("Circuit breaker: falha ao solicitar amizade - {}", t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     @CircuitBreaker(name = "app", fallbackMethod = "fallbackRespondFriendship")
@@ -448,7 +449,7 @@ public class AppClient {
 
     public FriendshipResponse fallbackRespondFriendship(String id, String status, Throwable t) {
         log.error("Circuit breaker: falha ao responder amizade {} - {}", id, t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     @CircuitBreaker(name = "app", fallbackMethod = "fallbackGetPending")
@@ -536,7 +537,7 @@ public class AppClient {
 
     public CountersResponse fallbackGetCounters(String code, Throwable t) {
         log.warn("Circuit breaker: falha ao buscar contadores de {} - {}", code, t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     @CircuitBreaker(name = "app", fallbackMethod = "fallbackGetFollowStatus")
@@ -549,7 +550,7 @@ public class AppClient {
 
     public FollowStatusResponse fallbackGetFollowStatus(String code, Throwable t) {
         log.warn("Circuit breaker: falha ao buscar status de seguimento de {} - {}", code, t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     // --------------------------- Busca de usuario -----------------------
@@ -563,7 +564,20 @@ public class AppClient {
 
     public PublicUserResponse fallbackFindUserByCode(String userCode, Throwable t) {
         log.error("Circuit breaker: falha ao buscar usuario {} - {}", userCode, t.getMessage());
-        throw new ServiceUnavailableException("Servico temporariamente indisponivel. Tente novamente em breve.");
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
+    }
+
+    @CircuitBreaker(name = "app", fallbackMethod = "fallbackFindUserSummaryByCode")
+    @Retry(name = "app")
+    public UserSummaryResponse findUserSummaryByCode(String userCode) {
+        return appRestClient.get()
+                .uri(b -> b.path("/usuario/resumo-codigo").queryParam("codigo", userCode).build())
+                .retrieve().body(UserSummaryResponse.class);
+    }
+
+    public UserSummaryResponse fallbackFindUserSummaryByCode(String userCode, Throwable t) {
+        log.error("Circuit breaker: falha ao resumir usuario {} - {}", userCode, t.getMessage());
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
     }
 
     @CircuitBreaker(name = "app", fallbackMethod = "fallbackAutocompleteUser")

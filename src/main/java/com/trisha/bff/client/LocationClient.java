@@ -1,5 +1,6 @@
 package com.trisha.bff.client;
 
+import com.trisha.bff.exception.ClientFallbacks;
 import com.trisha.bff.exception.ServiceUnavailableException;
 import com.trisha.bff.model.dto.request.GpsPointRequest;
 import com.trisha.bff.model.dto.request.SessionRequest;
@@ -42,7 +43,7 @@ public class LocationClient {
 
     public SessionResponse fallbackStartSession(SessionRequest request, Throwable t) {
         log.error("Circuit breaker: falha ao iniciar sessao de localizacao - {}", t.getMessage());
-        throw new ServiceUnavailableException("Servico de localizacao temporariamente indisponivel.");
+        throw ClientFallbacks.unavailable(t, "Servico de localizacao temporariamente indisponivel.");
     }
 
     @CircuitBreaker(name = "localizacao", fallbackMethod = "fallbackRegisterPoint")
@@ -54,7 +55,7 @@ public class LocationClient {
 
     public GpsPointResponse fallbackRegisterPoint(GpsPointRequest request, Throwable t) {
         log.error("Circuit breaker: falha ao registrar ponto GPS - {}", t.getMessage());
-        throw new ServiceUnavailableException("Servico de localizacao temporariamente indisponivel.");
+        throw ClientFallbacks.unavailable(t, "Servico de localizacao temporariamente indisponivel.");
     }
 
     @CircuitBreaker(name = "localizacao", fallbackMethod = "fallbackFinishSession")
@@ -66,7 +67,7 @@ public class LocationClient {
 
     public SessionResponse fallbackFinishSession(String id, Throwable t) {
         log.error("Circuit breaker: falha ao finalizar sessao {} - {}", id, t.getMessage());
-        throw new ServiceUnavailableException("Servico de localizacao temporariamente indisponivel.");
+        throw ClientFallbacks.unavailable(t, "Servico de localizacao temporariamente indisponivel.");
     }
 
     @CircuitBreaker(name = "localizacao", fallbackMethod = "fallbackCancelSession")
@@ -78,7 +79,7 @@ public class LocationClient {
 
     public SessionResponse fallbackCancelSession(String id, Throwable t) {
         log.error("Circuit breaker: falha ao cancelar sessao {} - {}", id, t.getMessage());
-        throw new ServiceUnavailableException("Servico de localizacao temporariamente indisponivel.");
+        throw ClientFallbacks.unavailable(t, "Servico de localizacao temporariamente indisponivel.");
     }
 
     @CircuitBreaker(name = "localizacao", fallbackMethod = "fallbackUpdateVisibility")
@@ -92,7 +93,7 @@ public class LocationClient {
 
     public SessionResponse fallbackUpdateVisibility(String id, String visibility, Throwable t) {
         log.error("Circuit breaker: falha ao alterar visibilidade da sessao {} - {}", id, t.getMessage());
-        throw new ServiceUnavailableException("Servico de localizacao temporariamente indisponivel.");
+        throw ClientFallbacks.unavailable(t, "Servico de localizacao temporariamente indisponivel.");
     }
 
     @CircuitBreaker(name = "localizacao", fallbackMethod = "fallbackGetSession")
@@ -104,7 +105,7 @@ public class LocationClient {
 
     public SessionResponse fallbackGetSession(String id, Throwable t) {
         log.error("Circuit breaker: falha ao buscar sessao {} - {}", id, t.getMessage());
-        throw new ServiceUnavailableException("Servico de localizacao temporariamente indisponivel.");
+        throw ClientFallbacks.unavailable(t, "Servico de localizacao temporariamente indisponivel.");
     }
 
     /** Checagem de acompanhamento ao vivo — falha FECHADA (erro nunca vira "pode ver"). */
@@ -118,7 +119,7 @@ public class LocationClient {
 
     public boolean fallbackCanWatchSession(String id, Throwable t) {
         log.error("Circuit breaker: falha na checagem de acesso da sessao {} - {}", id, t.getMessage());
-        throw new ServiceUnavailableException("Servico de localizacao temporariamente indisponivel.");
+        throw ClientFallbacks.unavailable(t, "Servico de localizacao temporariamente indisponivel.");
     }
 
     @CircuitBreaker(name = "localizacao", fallbackMethod = "fallbackGetSessionByPath")
@@ -130,7 +131,7 @@ public class LocationClient {
 
     public SessionResponse fallbackGetSessionByPath(String pathId, Throwable t) {
         log.error("Circuit breaker: falha ao buscar sessao do caminho {} - {}", pathId, t.getMessage());
-        throw new ServiceUnavailableException("Servico de localizacao temporariamente indisponivel.");
+        throw ClientFallbacks.unavailable(t, "Servico de localizacao temporariamente indisponivel.");
     }
 
     @CircuitBreaker(name = "localizacao", fallbackMethod = "fallbackGetPointsBySession")

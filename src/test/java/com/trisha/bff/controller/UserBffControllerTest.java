@@ -3,6 +3,7 @@ package com.trisha.bff.controller;
 import com.trisha.bff.auth.WebConfig;
 import com.trisha.bff.model.dto.request.UserCreateRequest;
 import com.trisha.bff.model.dto.response.UserResponse;
+import com.trisha.bff.model.dto.response.UserSummaryResponse;
 import com.trisha.bff.service.UserBffService;
 import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -101,5 +102,20 @@ class UserBffControllerTest {
         mockMvc.perform(get("/bff/usuarios/{id}", "inexistente")
                         .with(jwt().jwt(j -> j.subject(USER_ID).claim("codigoUsuario", "trilheiro42"))))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("GET /bff/usuarios/resumo retorna resumo pelo codigo publico")
+    void shouldFindSummaryByCode() throws Exception {
+        when(userService.findSummaryByCode("trilheiro42"))
+                .thenReturn(new UserSummaryResponse(USER_ID, "Rafael Santos", "trilheiro42"));
+
+        mockMvc.perform(get("/bff/usuarios/resumo")
+                        .with(jwt().jwt(j -> j.subject(USER_ID).claim("codigoUsuario", "trilheiro42")))
+                        .param("codigo", "trilheiro42"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(USER_ID))
+                .andExpect(jsonPath("$.nome").value("Rafael Santos"))
+                .andExpect(jsonPath("$.codigoUsuario").value("trilheiro42"));
     }
 }

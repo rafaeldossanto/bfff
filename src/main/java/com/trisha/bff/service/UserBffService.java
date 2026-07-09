@@ -3,12 +3,14 @@ package com.trisha.bff.service;
 import com.trisha.bff.client.AppClient;
 import com.trisha.bff.client.CadastroClient;
 import com.trisha.bff.model.dto.request.DevLoginRequest;
+import com.trisha.bff.model.dto.request.LoginRequest;
 import com.trisha.bff.model.dto.request.SocialLoginRequest;
 import com.trisha.bff.model.dto.request.UserCreateRequest;
 import com.trisha.bff.model.dto.request.UserUpdateRequest;
 import com.trisha.bff.model.dto.response.AuthenticationResponse;
 import com.trisha.bff.model.dto.response.PublicUserResponse;
 import com.trisha.bff.model.dto.response.UserResponse;
+import com.trisha.bff.model.dto.response.UserSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -60,6 +62,11 @@ public class UserBffService {
         return cadastroClient.confirmEmail(token);
     }
 
+    public String resendEmail(String userId) {
+        log.info("BFF: reenviando email de confirmacao do usuario {}", userId);
+        return cadastroClient.resendEmail(userId);
+    }
+
     public String acceptTerms(String userId) {
         return cadastroClient.acceptTerms(userId);
     }
@@ -69,6 +76,11 @@ public class UserBffService {
         return cadastroClient.socialLogin(request);
     }
 
+    public AuthenticationResponse login(LoginRequest request) {
+        log.info("BFF: login por senha {}", request.email());
+        return cadastroClient.login(request);
+    }
+
     public AuthenticationResponse devLogin(DevLoginRequest request) {
         log.info("BFF: dev login {}", request.email());
         return cadastroClient.devLogin(request);
@@ -76,6 +88,12 @@ public class UserBffService {
 
     public PublicUserResponse findByCode(String userCode) {
         return appClient.findUserByCode(userCode);
+    }
+
+    /** Resumo com o usuarioId — o app resolve o codigo do perfil aberto para
+     *  entao listar as aventuras visiveis daquele usuario. */
+    public UserSummaryResponse findSummaryByCode(String userCode) {
+        return appClient.findUserSummaryByCode(userCode);
     }
 
     public List<PublicUserResponse> autocomplete(String term) {

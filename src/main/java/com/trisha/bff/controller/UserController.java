@@ -6,6 +6,7 @@ import com.trisha.bff.model.dto.request.UserUpdateRequest;
 import com.trisha.bff.model.dto.response.AuthenticationResponse;
 import com.trisha.bff.model.dto.response.PublicUserResponse;
 import com.trisha.bff.model.dto.response.UserResponse;
+import com.trisha.bff.model.dto.response.UserSummaryResponse;
 import com.trisha.bff.service.UserBffService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -62,6 +63,11 @@ public class UserController {
         return userService.confirmEmail(token);
     }
 
+    @PostMapping("/{id}/reenviar-email")
+    public String resendEmail(@PathVariable("id") String userId) {
+        return userService.resendEmail(userId);
+    }
+
     @GetMapping("/codigo/{codigoUsuario}")
     public PublicUserResponse findByCode(@PathVariable("codigoUsuario") String userCode) {
         return userService.findByCode(userCode);
@@ -70,5 +76,11 @@ public class UserController {
     @GetMapping("/busca")
     public List<PublicUserResponse> autocomplete(@RequestParam("termo") String term) {
         return userService.autocomplete(term);
+    }
+
+    /** Resumo (com usuarioId) pelo codigo publico — grade de aventuras no perfil de terceiro. */
+    @GetMapping("/resumo")
+    public UserSummaryResponse findSummaryByCode(@RequestParam("codigo") String userCode) {
+        return userService.findSummaryByCode(userCode);
     }
 }

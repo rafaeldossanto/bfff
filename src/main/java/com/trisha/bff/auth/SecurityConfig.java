@@ -9,9 +9,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * Resource server da borda. Publicos: cadastro e login social (ainda sem token),
- * confirmacao de email (link clicado) e swagger/health. O resto exige o Bearer
- * da aplicacao, que o BFF tambem propaga aos servicos downstream.
+ * Resource server da borda. Publicos: cadastro e logins (ainda sem token),
+ * aceite de termos e confirmacao de email (usuario PENDENTE tambem ainda sem
+ * token) e swagger/health. O resto exige o Bearer da aplicacao, que o BFF
+ * tambem propaga aos servicos downstream.
  */
 @Configuration
 public class SecurityConfig {
@@ -22,7 +23,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/bff/usuarios", "/bff/usuarios/login-social", "/bff/auth/dev-login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/bff/usuarios", "/bff/usuarios/login-social",
+                                "/bff/usuarios/*/aceitar-termos", "/bff/usuarios/*/reenviar-email",
+                                "/bff/auth/login", "/bff/auth/dev-login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/bff/usuarios/confirmar-email").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/actuator/health").permitAll()
                         .anyRequest().authenticated())

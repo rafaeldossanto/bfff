@@ -3,9 +3,10 @@ package com.trisha.bff.config;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
+import java.net.http.HttpClient;
 import java.time.Duration;
 
 @Configuration
@@ -56,9 +57,16 @@ public class RestClientConfig {
                 .build();
     }
 
-    private SimpleClientHttpRequestFactory requestFactory() {
-        var factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(CONNECTION_TIMEOUT);
+    /**
+     * java.net.http.HttpClient em vez de HttpURLConnection: o Simple factory
+     * NAO suporta o metodo PATCH ("Invalid HTTP method: PATCH"), que os
+     * downstreams usam (finalizar sessao/caminho, visibilidade, status).
+     */
+    private JdkClientHttpRequestFactory requestFactory() {
+        HttpClient httpClient = HttpClient.newBuilder()
+                .connectTimeout(CONNECTION_TIMEOUT)
+                .build();
+        var factory = new JdkClientHttpRequestFactory(httpClient);
         factory.setReadTimeout(READ_TIMEOUT);
         return factory;
     }
