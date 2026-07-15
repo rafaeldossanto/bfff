@@ -1,6 +1,5 @@
 package com.trisha.bff.controller;
 
-import com.trisha.bff.model.dto.request.DevLoginRequest;
 import com.trisha.bff.model.dto.request.LoginRequest;
 import com.trisha.bff.model.dto.response.AuthenticationResponse;
 import com.trisha.bff.service.UserBffService;
@@ -21,10 +20,5 @@ public class AuthController {
     @PostMapping("/login")
     public AuthenticationResponse login(@RequestBody @Valid LoginRequest request) {
         return userService.login(request);
-    }
-
-    @PostMapping("/dev-login")
-    public AuthenticationResponse devLogin(@RequestBody @Valid DevLoginRequest request) {
-        return userService.devLogin(request);
     }
 }

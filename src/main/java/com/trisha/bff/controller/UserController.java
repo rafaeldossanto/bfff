@@ -7,10 +7,13 @@ import com.trisha.bff.model.dto.response.AuthenticationResponse;
 import com.trisha.bff.model.dto.response.PublicUserResponse;
 import com.trisha.bff.model.dto.response.UserResponse;
 import com.trisha.bff.model.dto.response.UserSummaryResponse;
+import com.trisha.bff.auth.AuthenticatedUser;
+import com.trisha.bff.exception.ForbiddenException;
 import com.trisha.bff.service.UserBffService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
+import static java.util.Objects.isNull;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,18 +42,29 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public UserResponse update(@PathVariable String id, @RequestBody @Valid UserUpdateRequest request) {
+    public UserResponse update(AuthenticatedUser user, @PathVariable String id,
+                               @RequestBody @Valid UserUpdateRequest request) {
+        ensureSelf(user, id);
         return userService.update(id, request);
     }
 
     @GetMapping("/{id}")
-    public UserResponse getById(@PathVariable String id) {
+    public UserResponse getById(AuthenticatedUser user, @PathVariable String id) {
+        ensureSelf(user, id);
         return userService.getById(id);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable String id) {
+    public void delete(AuthenticatedUser user, @PathVariable String id) {
+        ensureSelf(user, id);
         userService.delete(id);
+    }
+
+    /** Espelha a regra do Cadastro na borda: o usuario so opera a propria conta. */
+    private void ensureSelf(AuthenticatedUser user, String id) {
+        if (isNull(user) || !user.id().equals(id)) {
+            throw new ForbiddenException("Voce so pode acessar a propria conta");
+        }
     }
 
     @PostMapping("/{id}/aceitar-termos")

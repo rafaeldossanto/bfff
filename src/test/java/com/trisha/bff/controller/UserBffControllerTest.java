@@ -93,15 +93,23 @@ class UserBffControllerTest {
     }
 
     @Test
-    @DisplayName("GET /bff/usuarios/{id} retorna 404 quando usuario nao existe no downstream")
+    @DisplayName("GET /bff/usuarios/{id} retorna 404 quando a propria conta nao existe no downstream")
     void shouldReturn404WhenUserNotFound() throws Exception {
-        when(userService.getById("inexistente"))
+        when(userService.getById(USER_ID))
                 .thenThrow(new org.springframework.web.client.HttpClientErrorException(
                         org.springframework.http.HttpStatus.NOT_FOUND));
 
-        mockMvc.perform(get("/bff/usuarios/{id}", "inexistente")
+        mockMvc.perform(get("/bff/usuarios/{id}", USER_ID)
                         .with(jwt().jwt(j -> j.subject(USER_ID).claim("codigoUsuario", "trilheiro42"))))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("GET /bff/usuarios/{id} recusa acesso a conta de outro usuario")
+    void shouldRejectAccessToAnotherUser() throws Exception {
+        mockMvc.perform(get("/bff/usuarios/{id}", "outro-usuario")
+                        .with(jwt().jwt(j -> j.subject(USER_ID).claim("codigoUsuario", "trilheiro42"))))
+                .andExpect(status().isForbidden());
     }
 
     @Test
