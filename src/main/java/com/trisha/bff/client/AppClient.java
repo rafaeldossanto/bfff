@@ -21,6 +21,7 @@ import com.trisha.bff.model.dto.response.EvidenceResponse;
 import com.trisha.bff.model.dto.response.MediaResponse;
 import com.trisha.bff.model.dto.response.PageResponse;
 import com.trisha.bff.model.dto.response.PointOfInterestResponse;
+import com.trisha.bff.model.dto.response.PointStatusResponse;
 import com.trisha.bff.model.dto.response.RegionResponse;
 import com.trisha.bff.model.dto.response.PublicUserResponse;
 import com.trisha.bff.model.dto.response.UserSummaryResponse;
@@ -46,6 +47,7 @@ public class AppClient {
     private static final ParameterizedTypeReference<List<PathDiscoveryResponse>> LIST_PATH_DISCOVERY = new ParameterizedTypeReference<>() {};
     private static final ParameterizedTypeReference<List<UserSummaryResponse>> LIST_USER_SUMMARY = new ParameterizedTypeReference<>() {};
     private static final ParameterizedTypeReference<PageResponse<PointOfInterestResponse>> PAGE_POINT = new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<List<PointStatusResponse>> LIST_POINT_STATUS = new ParameterizedTypeReference<>() {};
     private static final ParameterizedTypeReference<PageResponse<MediaResponse>> PAGE_MEDIA = new ParameterizedTypeReference<>() {};
     private static final ParameterizedTypeReference<PageResponse<FriendshipResponse>> PAGE_FRIENDSHIP = new ParameterizedTypeReference<>() {};
     private static final ParameterizedTypeReference<List<PublicUserResponse>> LIST_PUBLIC_USER = new ParameterizedTypeReference<>() {};
@@ -383,6 +385,60 @@ public class AppClient {
     public EvidenceResponse fallbackAddEvidence(EvidenceRequest request, Throwable t) {
         log.error("Circuit breaker: falha ao adicionar evidencia - {}", t.getMessage());
         throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
+    }
+
+    @CircuitBreaker(name = "app", fallbackMethod = "fallbackSetPointStatus")
+    @Retry(name = "app")
+    public PointStatusResponse setPointStatus(String id, String status) {
+        return appRestClient.patch()
+                .uri(b -> b.path("/ponto-interesse/{id}/status")
+                        .queryParam("status", status).build(id))
+                .retrieve().body(PointStatusResponse.class);
+    }
+
+    public PointStatusResponse fallbackSetPointStatus(String id, String status, Throwable t) {
+        log.error("Circuit breaker: falha ao marcar status do ponto {} - {}", id, t.getMessage());
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
+    }
+
+    @CircuitBreaker(name = "app", fallbackMethod = "fallbackClearPointStatus")
+    @Retry(name = "app")
+    public void clearPointStatus(String id) {
+        appRestClient.delete().uri("/ponto-interesse/{id}/status", id)
+                .retrieve().toBodilessEntity();
+    }
+
+    public void fallbackClearPointStatus(String id, Throwable t) {
+        log.error("Circuit breaker: falha ao remover status do ponto {} - {}", id, t.getMessage());
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
+    }
+
+    @CircuitBreaker(name = "app", fallbackMethod = "fallbackSetPointGoal")
+    @Retry(name = "app")
+    public PointStatusResponse setPointGoal(String id, boolean goal) {
+        return appRestClient.patch()
+                .uri(b -> b.path("/ponto-interesse/{id}/objetivo")
+                        .queryParam("objetivo", goal).build(id))
+                .retrieve().body(PointStatusResponse.class);
+    }
+
+    public PointStatusResponse fallbackSetPointGoal(String id, boolean goal, Throwable t) {
+        log.error("Circuit breaker: falha ao marcar objetivo no ponto {} - {}", id, t.getMessage());
+        throw ClientFallbacks.unavailable(t, "Servico temporariamente indisponivel. Tente novamente em breve.");
+    }
+
+    @CircuitBreaker(name = "app", fallbackMethod = "fallbackGetPointStatuses")
+    @Retry(name = "app")
+    public List<PointStatusResponse> getPointStatuses(List<String> ids) {
+        return appRestClient.get()
+                .uri(b -> b.path("/ponto-interesse/status")
+                        .queryParam("ids", String.join(",", ids)).build())
+                .retrieve().body(LIST_POINT_STATUS);
+    }
+
+    public List<PointStatusResponse> fallbackGetPointStatuses(List<String> ids, Throwable t) {
+        log.warn("Circuit breaker: falha ao buscar status dos pontos - {}", t.getMessage());
+        return Collections.emptyList();
     }
 
     public MediaResponse saveMedia(MediaRequest request) {
