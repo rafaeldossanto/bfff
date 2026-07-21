@@ -45,12 +45,14 @@ public class RegionController {
     }
 
     @GetMapping("/{id}/aventuras")
-    public PageResponse<AdventureResponse> adventures(@PathVariable String id, Pageable pageable) {
+    public PageResponse<AdventureResponse> adventures(@PathVariable String id,
+                                                      Pageable pageable) {
         return regionService.adventures(id, pageable);
     }
 
     @PutMapping("/{id}")
-    public RegionResponse update(@PathVariable String id, @RequestBody @Valid RegionRequest request) {
+    public RegionResponse update(@PathVariable String id,
+                                 @RequestBody @Valid RegionRequest request) {
         return regionService.update(id, request);
     }
 

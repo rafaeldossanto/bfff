@@ -30,17 +30,20 @@ public class FriendshipController {
     }
 
     @PatchMapping("/{id}/responder")
-    public FriendshipResponse respond(@PathVariable String id, @RequestParam String status) {
+    public FriendshipResponse respond(@PathVariable String id,
+                                      @RequestParam String status) {
         return friendshipService.respond(id, status);
     }
 
     @GetMapping("/pendentes")
-    public PageResponse<FriendshipResponse> getPending(AuthenticatedUser user, Pageable pageable) {
+    public PageResponse<FriendshipResponse> getPending(AuthenticatedUser user,
+                                                       Pageable pageable) {
         return friendshipService.getPending(user, pageable);
     }
 
     @GetMapping("/amigos")
-    public PageResponse<FriendshipResponse> getFriends(AuthenticatedUser user, Pageable pageable) {
+    public PageResponse<FriendshipResponse> getFriends(AuthenticatedUser user,
+                                                       Pageable pageable) {
         return friendshipService.getFriends(user, pageable);
     }
 }

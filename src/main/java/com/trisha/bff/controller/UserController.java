@@ -42,20 +42,23 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public UserResponse update(AuthenticatedUser user, @PathVariable String id,
+    public UserResponse update(AuthenticatedUser user,
+                               @PathVariable String id,
                                @RequestBody @Valid UserUpdateRequest request) {
         ensureSelf(user, id);
         return userService.update(id, request);
     }
 
     @GetMapping("/{id}")
-    public UserResponse getById(AuthenticatedUser user, @PathVariable String id) {
+    public UserResponse getById(AuthenticatedUser user,
+                                @PathVariable String id) {
         ensureSelf(user, id);
         return userService.getById(id);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(AuthenticatedUser user, @PathVariable String id) {
+    public void delete(AuthenticatedUser user,
+                       @PathVariable String id) {
         ensureSelf(user, id);
         userService.delete(id);
     }

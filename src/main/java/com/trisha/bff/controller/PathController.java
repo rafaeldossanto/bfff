@@ -47,7 +47,8 @@ public class PathController {
 
     @GetMapping("/usuario/{usuarioId}")
     public PageResponse<PathResponse> getByUser(AuthenticatedUser user,
-                                                @PathVariable("usuarioId") String userId, Pageable pageable) {
+                                                @PathVariable("usuarioId") String userId,
+                                                Pageable pageable) {
         return pathService.getByUser(user.id(), userId, pageable);
     }
 

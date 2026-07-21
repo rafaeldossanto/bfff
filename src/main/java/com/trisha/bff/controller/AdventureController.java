@@ -40,33 +40,39 @@ public class AdventureController {
     }
 
     @GetMapping("/{id}")
-    public AdventureResponse getById(AuthenticatedUser user, @PathVariable String id) {
+    public AdventureResponse getById(AuthenticatedUser user,
+                                     @PathVariable String id) {
         return adventureService.getById(user.id(), id);
     }
 
     @GetMapping("/{id}/detalhe")
-    public AdventureDetailResponse getDetail(AuthenticatedUser user, @PathVariable String id) {
+    public AdventureDetailResponse getDetail(AuthenticatedUser user,
+                                             @PathVariable String id) {
         return adventureService.getDetail(user.id(), id);
     }
 
     @GetMapping("/usuario/{usuarioId}")
     public PageResponse<AdventureResponse> getByUser(AuthenticatedUser user,
-                                                     @PathVariable("usuarioId") String userId, Pageable pageable) {
+                                                     @PathVariable("usuarioId") String userId,
+                                                     Pageable pageable) {
         return adventureService.getByUser(user.id(), userId, pageable);
     }
 
     @PatchMapping("/{id}/status")
-    public AdventureResponse updateStatus(@PathVariable String id, @RequestParam String status) {
+    public AdventureResponse updateStatus(@PathVariable String id,
+                                          @RequestParam String status) {
         return adventureService.updateStatus(id, status);
     }
 
     @PatchMapping("/{id}/regiao")
-    public AdventureResponse moveRegion(@PathVariable String id, @RequestBody MoveRegionRequest request) {
+    public AdventureResponse moveRegion(@PathVariable String id,
+                                        @RequestBody MoveRegionRequest request) {
         return adventureService.moveRegion(id, request);
     }
 
     @PostMapping("/{id}/participante")
-    public void addParticipant(@PathVariable String id, @RequestParam("usuarioId") String userId) {
+    public void addParticipant(@PathVariable String id,
+                               @RequestParam("usuarioId") String userId) {
         adventureService.addParticipant(id, userId);
     }
 

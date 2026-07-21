@@ -35,12 +35,14 @@ public class FollowerController {
     }
 
     @GetMapping("/seguidores")
-    public PageResponse<PublicUserResponse> followers(@RequestParam("codigo") String code, Pageable pageable) {
+    public PageResponse<PublicUserResponse> followers(@RequestParam("codigo") String code,
+                                                      Pageable pageable) {
         return followerService.followers(code, pageable);
     }
 
     @GetMapping("/seguindo")
-    public PageResponse<PublicUserResponse> following(@RequestParam("codigo") String code, Pageable pageable) {
+    public PageResponse<PublicUserResponse> following(@RequestParam("codigo") String code,
+                                                      Pageable pageable) {
         return followerService.following(code, pageable);
     }
 

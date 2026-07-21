@@ -34,7 +34,8 @@ public class PointOfInterestController {
     }
 
     @GetMapping("/caminho/{caminhoId}")
-    public PageResponse<PointOfInterestResponse> getByPath(@PathVariable("caminhoId") String pathId, Pageable pageable) {
+    public PageResponse<PointOfInterestResponse> getByPath(@PathVariable("caminhoId") String pathId,
+                                                           Pageable pageable) {
         return pointService.getByPath(pathId, pageable);
     }
 
