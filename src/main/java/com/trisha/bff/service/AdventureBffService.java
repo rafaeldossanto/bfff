@@ -6,6 +6,7 @@ import com.trisha.bff.model.dto.request.MoveRegionRequest;
 import com.trisha.bff.model.dto.response.AdventureDetailResponse;
 import com.trisha.bff.model.dto.response.AdventureResponse;
 import com.trisha.bff.model.dto.response.FeedAdventureResponse;
+import com.trisha.bff.model.dto.response.LeaveAdventureResponse;
 import com.trisha.bff.model.dto.response.PathResponse;
 import com.trisha.bff.model.dto.response.MediaResponse;
 import com.trisha.bff.model.dto.response.PageResponse;
@@ -92,7 +93,9 @@ public class AdventureBffService {
                             adventure.destination(),
                             adventure.status(),
                             adventure.visibility(),
-                            adventure.createdAt());
+                            adventure.createdAt(),
+                            adventure.participantsCount(),
+                            adventure.durationHours());
                 })
                 .toList();
 
@@ -143,6 +146,26 @@ public class AdventureBffService {
     public void addParticipant(String adventureId, String userId) {
         log.info("BFF: adicionando participante {} a aventura {}", userId, adventureId);
         appClient.addParticipant(adventureId, userId);
+    }
+
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "aventura", allEntries = true),
+            @CacheEvict(cacheNames = "aventura-detalhe", allEntries = true),
+            @CacheEvict(cacheNames = "aventuras-usuario", allEntries = true)
+    })
+    public LeaveAdventureResponse leave(String adventureId, boolean keepData) {
+        log.info("BFF: saindo da aventura {} (manterDados={})", adventureId, keepData);
+        return appClient.leaveAdventure(adventureId, keepData);
+    }
+
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "aventura", allEntries = true),
+            @CacheEvict(cacheNames = "aventura-detalhe", allEntries = true),
+            @CacheEvict(cacheNames = "aventuras-usuario", allEntries = true)
+    })
+    public LeaveAdventureResponse kick(String adventureId, String userId) {
+        log.info("BFF: removendo participante {} da aventura {}", userId, adventureId);
+        return appClient.kickParticipant(adventureId, userId);
     }
 
     @Caching(evict = {

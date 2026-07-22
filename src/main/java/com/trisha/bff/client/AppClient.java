@@ -14,6 +14,7 @@ import com.trisha.bff.model.dto.request.FollowRequest;
 import com.trisha.bff.model.dto.response.FriendshipResponse;
 import com.trisha.bff.model.dto.response.AdventureResponse;
 import com.trisha.bff.model.dto.response.CountersResponse;
+import com.trisha.bff.model.dto.response.LeaveAdventureResponse;
 import com.trisha.bff.model.dto.response.FollowStatusResponse;
 import com.trisha.bff.model.dto.response.PathDiscoveryResponse;
 import com.trisha.bff.model.dto.response.PathResponse;
@@ -215,6 +216,20 @@ public class AppClient {
         appRestClient.post()
                 .uri(b -> b.path("/aventura/{id}/participante").queryParam("usuarioId", userId).build(adventureId))
                 .retrieve().toBodilessEntity();
+    }
+
+    /** O proprio usuario (via Bearer) sai da aventura; keepData preserva os registros. */
+    public LeaveAdventureResponse leaveAdventure(String adventureId, boolean keepData) {
+        return appRestClient.delete()
+                .uri(b -> b.path("/aventura/{id}/participante").queryParam("manterDados", keepData).build(adventureId))
+                .retrieve().body(LeaveAdventureResponse.class);
+    }
+
+    /** O dono remove um participante; os dados do removido sao sempre preservados. */
+    public LeaveAdventureResponse kickParticipant(String adventureId, String userId) {
+        return appRestClient.delete()
+                .uri("/aventura/{id}/participante/{userId}", adventureId, userId)
+                .retrieve().body(LeaveAdventureResponse.class);
     }
 
     public void deleteAdventure(String id) {

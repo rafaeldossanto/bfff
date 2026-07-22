@@ -6,6 +6,7 @@ import com.trisha.bff.model.dto.request.MoveRegionRequest;
 import com.trisha.bff.model.dto.response.AdventureDetailResponse;
 import com.trisha.bff.model.dto.response.AdventureResponse;
 import com.trisha.bff.model.dto.response.FeedAdventureResponse;
+import com.trisha.bff.model.dto.response.LeaveAdventureResponse;
 import com.trisha.bff.model.dto.response.PageResponse;
 import com.trisha.bff.service.AdventureBffService;
 import jakarta.validation.Valid;
@@ -74,6 +75,20 @@ public class AdventureController {
     public void addParticipant(@PathVariable String id,
                                @RequestParam("usuarioId") String userId) {
         adventureService.addParticipant(id, userId);
+    }
+
+    /** O proprio usuario (via Bearer) sai da aventura; manterDados preserva os registros. */
+    @DeleteMapping("/{id}/participante")
+    public LeaveAdventureResponse leave(@PathVariable String id,
+                                        @RequestParam(name = "manterDados", defaultValue = "true") boolean keepData) {
+        return adventureService.leave(id, keepData);
+    }
+
+    /** O dono remove um participante; os dados do removido sao sempre preservados. */
+    @DeleteMapping("/{id}/participante/{userId}")
+    public LeaveAdventureResponse kick(@PathVariable String id,
+                                       @PathVariable("userId") String userId) {
+        return adventureService.kick(id, userId);
     }
 
     @DeleteMapping("/{id}")

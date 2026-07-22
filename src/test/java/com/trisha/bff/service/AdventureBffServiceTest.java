@@ -2,6 +2,7 @@ package com.trisha.bff.service;
 
 import com.trisha.bff.client.AppClient;
 import com.trisha.bff.model.dto.response.AdventureResponse;
+import com.trisha.bff.model.dto.response.LeaveAdventureResponse;
 import com.trisha.bff.model.dto.response.PageResponse;
 import com.trisha.bff.stub.BffStub;
 import org.junit.jupiter.api.DisplayName;
@@ -107,5 +108,28 @@ class AdventureBffServiceTest {
         service.delete(BffStub.ADVENTURE_ID);
 
         verify(appClient).deleteAdventure(BffStub.ADVENTURE_ID);
+    }
+
+    @Test
+    @DisplayName("leave deve delegar ao AppClient e devolver o resultado")
+    void deveSair() {
+        when(appClient.leaveAdventure(BffStub.ADVENTURE_ID, true))
+                .thenReturn(new LeaveAdventureResponse("aventura-pessoal", 1, 0));
+
+        LeaveAdventureResponse response = service.leave(BffStub.ADVENTURE_ID, true);
+
+        assertThat(response.personalAdventureId()).isEqualTo("aventura-pessoal");
+        verify(appClient).leaveAdventure(BffStub.ADVENTURE_ID, true);
+    }
+
+    @Test
+    @DisplayName("kick deve delegar ao AppClient")
+    void deveRemoverParticipante() {
+        when(appClient.kickParticipant(BffStub.ADVENTURE_ID, "usuario-9"))
+                .thenReturn(new LeaveAdventureResponse("aventura-pessoal", 2, 0));
+
+        service.kick(BffStub.ADVENTURE_ID, "usuario-9");
+
+        verify(appClient).kickParticipant(BffStub.ADVENTURE_ID, "usuario-9");
     }
 }

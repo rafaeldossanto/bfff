@@ -11,5 +11,7 @@ public record AdventureResponse(
         @JsonProperty("destino") String destination,
         String status,
         @JsonProperty("visibilidade") String visibility,
-        @JsonProperty("criadoEm") LocalDateTime createdAt
+        @JsonProperty("criadoEm") LocalDateTime createdAt,
+        @JsonProperty("participantes") int participantsCount,
+        @JsonProperty("duracaoHoras") Double durationHours
 ) {}

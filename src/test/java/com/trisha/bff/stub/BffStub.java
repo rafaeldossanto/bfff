@@ -60,7 +60,7 @@ public final class BffStub {
 
     public static AdventureResponse anAdventure() {
         return new AdventureResponse(ADVENTURE_ID, USER_ID, "regiao-1", "Pico da Bandeira",
-                "PLANEJADA", "PRIVADA", LocalDateTime.now());
+                "PLANEJADA", "PRIVADA", LocalDateTime.now(), 1, null);
     }
 
     public static AdventureRequest anAdventureRequest() {

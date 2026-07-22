@@ -51,7 +51,7 @@ class AdventureBffControllerTest {
 
     private AdventureResponse responseStub() {
         return new AdventureResponse(ADVENTURE_ID, USER_ID, null, "Pico da Bandeira",
-                "PLANEJADA", "PRIVADA", LocalDateTime.now());
+                "PLANEJADA", "PRIVADA", LocalDateTime.now(), 1, null);
     }
 
     @Test
