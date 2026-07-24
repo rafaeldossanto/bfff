@@ -16,11 +16,24 @@ spring:
 
 server:
   port: 8090
+  # Atras de um reverse proxy (Caddy/Traefik/nginx), troque para 'framework' para
+  # que o rate limit chaveie pelo IP real do cliente (X-Forwarded-For) e nao pelo
+  # IP do proxy. Mantenha 'none' enquanto o BFF estiver exposto direto, senao um
+  # cliente pode forjar o X-Forwarded-For e escapar da trava.
+  forward-headers-strategy: ${SERVER_FORWARD_HEADERS_STRATEGY:none}
 
 # traceId (correlacao de requisicoes) gerado na borda e propagado downstream.
 logging:
   pattern:
     level: "%5p [trace:%X{traceId:-}]"
+
+# Trava anti-flood/brute-force por IP na borda (janela fixa no Redis). Endpoints
+# de autenticacao tem teto mais baixo. Ajuste os tetos por ambiente via env.
+rate-limit:
+  enabled: ${RATE_LIMIT_ENABLED:true}
+  default-limit: ${RATE_LIMIT_DEFAULT:600}
+  auth-limit: ${RATE_LIMIT_AUTH:30}
+  window-seconds: ${RATE_LIMIT_WINDOW_SECONDS:60}
 
 servicos:
   cadastro: ${SERVICO_CADASTRO_URL:http://localhost:8080}
