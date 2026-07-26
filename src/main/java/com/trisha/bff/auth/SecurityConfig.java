@@ -1,5 +1,6 @@
 package com.trisha.bff.auth;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,12 +18,18 @@ import java.util.List;
  * Resource server da borda. Publicos: cadastro e logins (ainda sem token),
  * aceite de termos e confirmacao de email (usuario PENDENTE tambem ainda sem
  * token) e swagger/health. O resto exige o Bearer da aplicacao, que o BFF
- * tambem propaga aos servicos downstream. O CORS libera o front web servido
- * em localhost (Flutter web em dev); origens de producao entram aqui quando
- * existirem.
+ * tambem propaga aos servicos downstream. O CORS libera as origens do front
+ * web configuradas em cors.allowed-origins (dev: localhost; prod: dominio
+ * real via CORS_ALLOWED_ORIGINS).
  */
 @Configuration
 public class SecurityConfig {
+
+    private final List<String> allowedOrigins;
+
+    public SecurityConfig(@Value("${cors.allowed-origins}") List<String> allowedOrigins) {
+        this.allowedOrigins = allowedOrigins;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -44,7 +51,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("http://localhost:*", "http://127.0.0.1:*"));
+        config.setAllowedOriginPatterns(allowedOrigins);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
 
